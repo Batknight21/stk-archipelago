@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<stkgui>
+    <div x="2%" y="1%" width="96%" height="98%" layout="vertical-row" >
+        <header id="archipelago_connect" align="center" height="8%" width="80%" text="Archipelago Connect" text_align="center"
+                I18N="In the Archipelago Connect Dialog" />
+        <spacer height="1%" width="10"/>
+
+        <box proportion="1" width="100%" height="100%" layout="vertical-row">
+            <div width="90%" align="center" layout="vertical-row" height="80%">
+                <spacer width="0%" height="5%" />
+                <div width="100%" height="12%" layout="horizontal-row" >
+                    <label   id="label_server" proportion="1" height="fit" text_align="left"
+                             I18N="In the Archipelago Connect Dialog" text="Server Adress"/>
+                    <textbox id="address" proportion="2" height="fit" I18N="In the Archipelago Connect Dialog"/>
+                </div>
+
+                <div width="100%" height="12%" layout="horizontal-row" >
+                    <label   id="label_slot_name" proportion="1" height="fit" text_align="left"
+                             I18N="In the Archipelago Connect Dialog" text="Slot Name"/>
+                    <textbox id="slot_name" proportion="2" height="fit" I18N="In the Archipelago Connect Dialog"/>
+                </div>
+
+                <div width="100%" height="12%" layout="horizontal-row" >
+                    <label   id="label_password" proportion="1" height="fit" text_align="left"
+                             I18N="In the Archipelago Connect Dialog" text="Password"/>
+                    <textbox id="password" proportion="2" height="fit" I18N="In the Archipelago Connect Dialog"/>
+                </div>
+
+                <spacer width="0%" height="70%" />
+                <button id="continue" align="center" height="fit" width="8f" text="Connect"/>
+            </div>
+        </box>
+    </div>
+
+    <icon-button id="back" x="1%" y="0" height="9%" icon="gui/icons/back.png"/>
+</stkgui>

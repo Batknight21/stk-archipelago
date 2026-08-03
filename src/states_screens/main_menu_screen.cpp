@@ -19,6 +19,7 @@
 
 #include "states_screens/main_menu_screen.hpp"
 
+#include "ap_screen.hpp"
 #include "addons/news_manager.hpp"
 #include "challenges/story_mode_timer.hpp"
 #include "challenges/unlock_manager.hpp"
@@ -574,6 +575,7 @@ void MainMenuScreen::eventCallback(Widget* widget, const std::string& name,
     }
     else if (selection == "story")
     {
+        /*
         NetworkConfig::get()->unsetNetworking();
         PlayerProfile *player = PlayerManager::getCurrentPlayer();
 
@@ -594,7 +596,7 @@ void MainMenuScreen::eventCallback(Widget* widget, const std::string& name,
             parts.push_back("introcutscene2");
             ((CutsceneWorld*)World::getWorld())->setParts(parts);
             //RaceManager::get()->startSingleRace("introcutscene2", 999, false);
-            
+
             CutSceneGeneral* scene = CutSceneGeneral::getInstance();
             scene->push();
             return;
@@ -602,7 +604,7 @@ void MainMenuScreen::eventCallback(Widget* widget, const std::string& name,
         else
         {
             // Unpause the story mode timer when entering back the story mode
-            story_mode_timer->unpauseTimer(/* exit loading pause */ false);
+            story_mode_timer->unpauseTimer(false);
 
             const std::string default_kart = UserConfigParams::m_default_kart;
             if (player->isLocked(default_kart))
@@ -615,6 +617,8 @@ void MainMenuScreen::eventCallback(Widget* widget, const std::string& name,
             }
             OverWorld::enterOverWorld();
         }
+        */
+        APConnectScreen::getInstance()->push();
     }
     else if (selection == "online")
     {
