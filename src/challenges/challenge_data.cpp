@@ -20,6 +20,7 @@
 #include <stdexcept>
 #include <sstream>
 
+#include "archipelago/stk_archipelago.hpp"
 #include "challenges/unlock_manager.hpp"
 #include "io/file_manager.hpp"
 #include "karts/abstract_kart.hpp"
@@ -720,3 +721,12 @@ void ChallengeData::addUnlockKartReward(const std::string &internal_name,
     feature.m_user_name = user_name;
     m_feature.push_back(feature);
 }   // addUnlockKartReward
+
+int ChallengeData::getNumTrophies() const
+{
+    if (m_id == "fortmagma")
+    {
+        return get_fort_magma_points();
+    }
+    else return m_num_trophies;
+}

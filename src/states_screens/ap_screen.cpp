@@ -42,7 +42,6 @@ void APConnectScreen::eventCallback(Widget* widget, const std::string& name, con
 {
     if (name == "continue")
     {
-        start_ap(m_server_address_box->getText(), m_slot_name_box->getText(), m_password_box->getText());
         NetworkConfig::get()->unsetNetworking();
         PlayerProfile *other_player = PlayerManager::get()->getPlayer(m_slot_name_box->getText());
         PlayerProfile *player = PlayerManager::get()->addNewPlayer(m_slot_name_box->getText());
@@ -56,6 +55,8 @@ void APConnectScreen::eventCallback(Widget* widget, const std::string& name, con
 
         // Start the story mode (and speedrun) timer
         story_mode_timer->startTimer();
+
+        start_ap(m_server_address_box->getText(), m_slot_name_box->getText(), m_password_box->getText());
 
         if (player->isFirstTime())
         {

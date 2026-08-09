@@ -276,7 +276,7 @@ void OverWorld::onFirePressed(Controller* who)
                 bool enough_challenges = (PlayerManager::getCurrentPlayer()->getNumCompletedChallenges() >= val2);
 #endif
                 bool unlocked = enough_challenges &&
-                    (val == 0 || is_unlocked_by_archipelago(challenges[n].m_challenge_id));
+                    (val == 0 || is_unlocked_by_archipelago(challenges[n].m_challenge_id, val));
                 
                 if (UserConfigParams::m_unlock_everything > 0)
                     unlocked = true;

@@ -204,7 +204,7 @@ public:
     bool getReverse() const { return m_reverse; }
     // ------------------------------------------------------------------------
     /** Get number of required trophies to start this challenge */
-    int getNumTrophies() const { return m_num_trophies; }
+    int getNumTrophies() const;
     // ------------------------------------------------------------------------
     /** Get number of required completed challenges to start this challenge */
     int getNumChallenges() const { return m_num_completed_challenges; }

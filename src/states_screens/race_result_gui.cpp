@@ -496,8 +496,6 @@ void RaceResultGUI::eventCallback(GUIEngine::Widget* widget,
 
                 if (gameCompleted)
                 {
-                    // send the goal to the multiworld
-                    goal_nolok_completed();
                     // clear the race
 
                     // kart will no longer be available during cutscene, drop reference

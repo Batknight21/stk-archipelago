@@ -266,6 +266,7 @@ void RaceGUIOverworld::drawTrophyPoints()
     const int next_unlock_points = player->getNextUnlockPoints();
     core::stringw sw(StringUtils::toString(points).c_str());
     core::stringw swg(StringUtils::toString(next_unlock_points).c_str());
+    stringw keys(get_key_display().c_str());
 
     static video::SColor time_color = video::SColor(255, 255, 255, 255);
 
@@ -331,6 +332,23 @@ void RaceGUIOverworld::drawTrophyPoints()
 
     font->setBlackBorder(true);
     font->draw(sw.c_str(), pos, time_color, false, vcenter, NULL, true /* ignore RTL */);
+    font->setBlackBorder(false);
+
+    pos.UpperLeftCorner.X += int(0.5f*size + number_width*0.5f);
+
+
+    dest = core::rect<s32>(int(pos.UpperLeftCorner.X - 2.5f*size),
+                               pos.UpperLeftCorner.Y,
+                               int(pos.UpperLeftCorner.X - 1.5f*size),
+                               pos.UpperLeftCorner.Y + size);
+
+    draw2DImage(m_lock, dest, source, NULL,
+                                              NULL, true /* alpha */);
+
+    pos.UpperLeftCorner.X -= int(2*size + number_width*0.5f);
+
+    font->setBlackBorder(true);
+    font->draw(keys.c_str(), pos, time_color, false, vcenter, NULL, true /* ignore RTL */);
     font->setBlackBorder(false);
 
     pos.UpperLeftCorner.X += int(0.5f*size + number_width*0.5f);
@@ -455,7 +473,7 @@ void RaceGUIOverworld::drawGlobalMiniMap()
         
         const ChallengeData* challenge = unlock_manager->getChallengeData(challenges[n].m_challenge_id);
         const unsigned int val = challenge->getNumTrophies();
-        bool unlocked = val == 0 || is_unlocked_by_archipelago(challenges[n].m_challenge_id);
+        bool unlocked = val == 0 || is_unlocked_by_archipelago(challenges[n].m_challenge_id, static_cast<int>(val));
         if (challenges[n].m_challenge_id == "fortmagma")
         {
             // For each track, check whether any difficulty has been completed ; fortmagma will not affect our decision (`n == m`) ; tutorial is ignored because it has no completion level
@@ -517,7 +535,7 @@ void RaceGUIOverworld::drawGlobalMiniMap()
         {
             const ChallengeData* challenge = unlock_manager->getChallengeData(challenges[n].m_challenge_id);
             const unsigned int val = challenge->getNumTrophies();
-            bool unlocked = (val == 0 || is_unlocked_by_archipelago(challenge->getChallengeId()));
+            bool unlocked = (val == 0 || is_unlocked_by_archipelago(challenge->getChallengeId(), static_cast<int>(val)));
             
             if (UserConfigParams::m_unlock_everything > 0)
                 unlocked = true;

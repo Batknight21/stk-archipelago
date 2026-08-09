@@ -199,7 +199,7 @@ void StoryModeStatus::computeActive(bool first_call)
     //Actually lock the tracks
     for (i = m_challenges_state.begin(); i != m_challenges_state.end();  i++)
     {
-        if (i->second->getData()->getNumTrophies() != 0 && !is_unlocked_by_archipelago(i->second->getData()->getChallengeId()))
+        if (i->second->getData()->getNumTrophies() != 0 && !is_unlocked_by_archipelago(i->second->getData()->getChallengeId(), m_points))
         {
             if (i->second->getData()->isSingleRace())
             {

@@ -24,7 +24,7 @@
 
 static std::string convert_wchar(const stringw& wtext);
 static int get_location_key(int difficulty, int trackId);
-static void grant_item(const FillerId& item);
+static void grant_item(const ItemType& item);
 static void set_object_activity(const std::string& challengeId);
 static int recent_points;
 static int get_difficulty_from_location_key(int key);
@@ -117,6 +117,10 @@ static int pending_power_ups = 0;
 static bool nitro_ability = false;
 static bool drift_ability = false;
 
+static int required_keys;
+static int collected_keys;
+static int fort_magma_points;
+
 void start_ap(const stringw& address, const stringw& slot_name, const stringw& password)
 {
     const std::string address_char = convert_wchar(address);
@@ -150,20 +154,9 @@ void start_ap(const stringw& address, const stringw& slot_name, const stringw& p
             PlayerManager::getCurrentPlayer()->computeActive();
             set_object_activity(item_to_track[item]);
         }
-        else if (item <= 22)
+        else
         {
-            grant_item(static_cast<FillerId>(item));
-        }
-        else if (item == 23)
-        {
-            if (unlocked_difficulty < RaceManager::DIFFICULTY_LAST)
-            {
-                unlocked_difficulty = static_cast<RaceManager::Difficulty>(static_cast<int>(unlocked_difficulty) + 1);
-                if (unlocked_difficulty == RaceManager::DIFFICULTY_BEST)
-                {
-                    PlayerManager::getCurrentPlayer()->computeActive();
-                }
-            }
+            grant_item(static_cast<ItemType>(item));
         }
     });
 
@@ -186,10 +179,20 @@ void start_ap(const stringw& address, const stringw& slot_name, const stringw& p
         }
     });
 
+    AP_RegisterSlotDataIntCallback("required_keys", [](const int keys)
+    {
+        required_keys = keys;
+    });
+
+    AP_RegisterSlotDataIntCallback("required_points", [](const int points)
+    {
+        fort_magma_points = points;
+    });
+
     AP_Start();
 }
 
-void grant_item(const FillerId& item)
+void grant_item(const ItemType& item)
 {
     switch (item)
     {
@@ -233,6 +236,23 @@ void grant_item(const FillerId& item)
     case DRIFT_ABILITY:
         {
             drift_ability = true;
+            break;
+        }
+    case PROGRESSIVE_DIFFICULTY:
+        {
+            if (unlocked_difficulty < RaceManager::DIFFICULTY_LAST)
+            {
+                unlocked_difficulty = static_cast<RaceManager::Difficulty>(static_cast<int>(unlocked_difficulty) + 1);
+                if (unlocked_difficulty == RaceManager::DIFFICULTY_BEST)
+                {
+                    PlayerManager::getCurrentPlayer()->computeActive();
+                }
+            }
+            break;
+        }
+    case KEY:
+        {
+            collected_keys++;
             break;
         }
     }
@@ -280,13 +300,9 @@ void unlocked(const ChallengeData* challenge)
     }
 }
 
-void goal_nolok_completed()
-{
-    
-}
-
 void set_object_activity(const std::string& challengeId)
 {
+    if (challengeId == "fortmagma") return;
     Track* track = Track::getCurrentTrack();
     if (RaceManager::get()->getTrackName() == "overworld")
     {
@@ -366,12 +382,36 @@ std::string convert_wchar(const stringw& wtext)
     return s;
 }
 
-bool is_unlocked_by_archipelago(const std::string& challengeId)
+bool is_unlocked_by_archipelago(const std::string& challengeId, const int points)
 {
-    return std::any_of(unlocked_challenges.begin(), unlocked_challenges.end(), [challengeId](const std::string& track)
+    if (challengeId == "fortmagma")
+    {
+        return fort_magma_points <= points;
+    }
+    else return std::any_of(unlocked_challenges.begin(), unlocked_challenges.end(), [challengeId](const std::string& track)
     {
         return track == challengeId;
     });
+}
+
+int get_current_keys()
+{
+    return collected_keys;
+}
+
+int get_required_keys()
+{
+    return required_keys;
+}
+
+int get_fort_magma_points()
+{
+    return fort_magma_points;
+}
+
+std::string get_key_display()
+{
+    return std::to_string(collected_keys) + "/" + std::to_string(required_keys);
 }
 
 int get_location_key(const int difficulty, const int trackId)

@@ -110,7 +110,7 @@ namespace Scripting
                 const unsigned int val2 = challenge->getNumChallenges();
                 bool enough_challenges = (PlayerManager::getCurrentPlayer()->getNumCompletedChallenges() >= val2);
 #endif
-            bool unlocked = enough_challenges && (val == 0 || is_unlocked_by_archipelago(challenge->getChallengeId()));
+            bool unlocked = enough_challenges && (val == 0 || is_unlocked_by_archipelago(challenge->getChallengeId(), val));
             return unlocked;
         }   // isChallengeUnlocked
 
