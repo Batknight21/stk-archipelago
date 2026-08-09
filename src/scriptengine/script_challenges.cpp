@@ -36,6 +36,9 @@
 #include <assert.h>
 #include <ISceneManager.h>
 #include <IBillboardTextSceneNode.h>
+#include <iostream>
+
+#include "archipelago/stk_archipelago.hpp"
 
 /** \cond DOXYGEN_IGNORE */
 namespace Scripting
@@ -107,7 +110,7 @@ namespace Scripting
                 const unsigned int val2 = challenge->getNumChallenges();
                 bool enough_challenges = (PlayerManager::getCurrentPlayer()->getNumCompletedChallenges() >= val2);
 #endif
-            bool unlocked = enough_challenges && (PlayerManager::getCurrentPlayer()->getPoints() >= val);
+            bool unlocked = enough_challenges && (val == 0 || is_unlocked_by_archipelago(challenge->getChallengeId()));
             return unlocked;
         }   // isChallengeUnlocked
 

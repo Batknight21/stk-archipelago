@@ -18,6 +18,8 @@
 
 #include "modes/world.hpp"
 
+#include <codecvt>
+
 #include "audio/music_manager.hpp"
 #include "audio/sfx_base.hpp"
 #include "audio/sfx_manager.hpp"
@@ -86,6 +88,11 @@
 
 #include <IrrlichtDevice.h>
 #include <ISceneManager.h>
+#include <locale>
+
+#include "Archipelago.h"
+#include "archipelago/stk_archipelago.hpp"
+#include "guiengine/message_queue.hpp"
 
 World* World::m_world[PT_COUNT];
 
@@ -713,6 +720,8 @@ void World::onGo()
         if (m_karts[i]->isGhostKart()) continue;
         m_karts[i]->getVehicle()->setAllBrakes(0);
     }
+
+
     // Reset track objects 1 more time to make sure all instances of moveable
     // fall at the same instant when race start in network
     if (NetworkConfig::get()->isNetworking())
@@ -1054,6 +1063,12 @@ void World::updateWorld(int ticks)
         return;
     }
 
+
+    if (RaceManager::get()->isLinearRaceMode())
+    {
+        in_race();
+    }
+
 #ifdef DEBUG
     assert(m_magic_number == 0xB01D6543);
 #endif
@@ -1180,6 +1195,18 @@ void World::update(int ticks)
             dynamic_cast<CameraNormal*>(cam)->restart();
         }
     }
+
+    PROFILER_PUSH_CPU_MARKER("Search for Archipelago messages", 0x20, 0x7F, 0x00);
+    if (AP_IsMessagePending())
+    {
+        std::cout << AP_GetLatestMessage()->text << "\n";
+        std::wstring_convert<std::codecvt_utf8<wchar_t>> conv;
+        std::wstring ws = conv.from_bytes(AP_GetLatestMessage()->text);
+        const stringw message = ws.c_str();
+        MessageQueue::add(MessageQueue::MT_ARCHIPELAGO, message);
+        AP_ClearLatestMessage();
+    }
+    PROFILER_POP_CPU_MARKER();
 
     PROFILER_PUSH_CPU_MARKER("World::update (sub-updates)", 0x20, 0x7F, 0x00);
     WorldStatus::update(ticks);

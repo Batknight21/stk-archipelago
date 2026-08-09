@@ -89,6 +89,11 @@ bool ChallengeStatus::isGrandPrix()
     return m_data->isGrandPrix();
 } // isUnlockList
 
+bool ChallengeStatus::isActive(RaceManager::Difficulty d) const
+{
+    return !was_completed(d, m_data->getChallengeId());
+}
+
 //-----------------------------------------------------------------------------
 
 void ChallengeStatus::save(UTFWriter& writer)

@@ -21,13 +21,14 @@ private:
     APConnectScreen();
 
     TextBoxWidget *m_slot_name_box;
-    TextBoxWidget *m_server_address;
+    TextBoxWidget *m_server_address_box;
+    TextBoxWidget *m_password_box;
 
 public:
 
     void init() OVERRIDE;
     void loadedFromFile() OVERRIDE;
-    void eventCallback(GUIEngine::Widget* widget, const std::string& name, const int playerID) OVERRIDE;
+    void eventCallback(Widget* widget, const std::string& name, const int playerID) OVERRIDE;
 };
 
 #endif //SUPERTUXKART_AP_SCREEN_HPP

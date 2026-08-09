@@ -30,6 +30,7 @@
 #include <fstream>
 #include <irrString.h>
 
+#include "archipelago/stk_archipelago.hpp"
 #include "race/race_manager.hpp"
 #include "utils/no_copy.hpp"
 
@@ -100,10 +101,7 @@ public:
     // ------------------------------------------------------------------------
     /** True if this challenge is active at the given difficulty.
      */
-    bool isActive(RaceManager::Difficulty d) const
-    {
-        return ((m_active >> (int) d)&0x01) == 1;
-    }   // isActive
+    bool isActive(RaceManager::Difficulty d) const;
     // ------------------------------------------------------------------------
     /** Sets this challenge to be active.
      */

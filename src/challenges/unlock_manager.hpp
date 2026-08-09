@@ -70,6 +70,8 @@ public:
                                    std::vector<const ChallengeData*>& unlocked);
     bool       unlockByPoints(int points, ChallengeStatus* unlock_list);
     bool       unlockSpecial(ChallengeStatus* unlock_list, int max_req_in_lower_diff);
+    bool       canUnlockByPoints(int points, ChallengeStatus* unlock_list);
+    bool       canUnlockSpecial(ChallengeStatus* unlock_list, int max_req_in_lower_diff);
 
     StoryModeStatus *createStoryModeStatus(const XMLNode *node=NULL);
 

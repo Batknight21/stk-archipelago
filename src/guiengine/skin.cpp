@@ -2660,10 +2660,17 @@ void Skin::drawBadgeOn(const Widget* widget, const core::recti& rect)
     }
     if (widget->m_badges & REDDOT_BADGE)
     {
-        float max_icon_size = 0.43f;
+        float max_icon_size = 0.45f;
         video::ITexture* texture = irr_driver->getTexture(FileManager::GUI_ICON,
                                                           "red_dot.png");
         doDrawBadge(texture, rect, max_icon_size, false);
+    }
+    if (widget->m_badges & ARCHIPELAGO_BADGE)
+    {
+        float max_icon_size = 0.4f;
+        video::ITexture* texture = irr_driver->getTexture(FileManager::GUI_ICON,
+                                                          "archipelago_icon.png");
+        doDrawBadge(texture, rect, max_icon_size, true);
     }
 }   // drawBadgeOn
 

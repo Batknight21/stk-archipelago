@@ -59,6 +59,8 @@
 #include <ISceneCollisionManager.h>
 #include <ISceneManager.h>
 
+#include "archipelago/stk_archipelago.hpp"
+
 #ifdef ANDROID
 #include <SDL_system.h>
 #endif
@@ -453,7 +455,7 @@ void RaceGUIOverworld::drawGlobalMiniMap()
         
         const ChallengeData* challenge = unlock_manager->getChallengeData(challenges[n].m_challenge_id);
         const unsigned int val = challenge->getNumTrophies();
-        bool unlocked = (PlayerManager::getCurrentPlayer()->getPoints() >= val);
+        bool unlocked = val == 0 || is_unlocked_by_archipelago(challenges[n].m_challenge_id);
         if (challenges[n].m_challenge_id == "fortmagma")
         {
             // For each track, check whether any difficulty has been completed ; fortmagma will not affect our decision (`n == m`) ; tutorial is ignored because it has no completion level
@@ -515,7 +517,7 @@ void RaceGUIOverworld::drawGlobalMiniMap()
         {
             const ChallengeData* challenge = unlock_manager->getChallengeData(challenges[n].m_challenge_id);
             const unsigned int val = challenge->getNumTrophies();
-            bool unlocked = (PlayerManager::getCurrentPlayer()->getPoints() >= val);
+            bool unlocked = (val == 0 || is_unlocked_by_archipelago(challenge->getChallengeId()));
             
             if (UserConfigParams::m_unlock_everything > 0)
                 unlocked = true;

@@ -43,6 +43,8 @@
 
 #include <cstdlib>
 
+#include "archipelago/stk_archipelago.hpp"
+
 PlayerController::PlayerController(AbstractKart *kart)
                 : Controller(kart)
 {
@@ -173,23 +175,23 @@ bool PlayerController::action(PlayerAction action, int value, bool dry_run)
 
         break;
     case PA_ACCEL:
-    {
-        uint16_t v16 = (uint16_t)value;
-        SET_OR_TEST(m_prev_accel, v16);
-        if (v16)
         {
-            SET_OR_TEST_GETTER(Accel, v16 / 32768.0f);
-            SET_OR_TEST_GETTER(Brake, false);
-            SET_OR_TEST_GETTER(Nitro, m_prev_nitro);
+            uint16_t v16 = (uint16_t)value;
+            SET_OR_TEST(m_prev_accel, v16);
+            if (v16)
+            {
+                SET_OR_TEST_GETTER(Accel, v16 / 32768.0f);
+                SET_OR_TEST_GETTER(Brake, false);
+                SET_OR_TEST_GETTER(Nitro, m_prev_nitro);
+            }
+            else
+            {
+                SET_OR_TEST_GETTER(Accel, 0.0f);
+                SET_OR_TEST_GETTER(Brake, m_prev_brake);
+                SET_OR_TEST_GETTER(Nitro, false);
+            }
+            break;
         }
-        else
-        {
-            SET_OR_TEST_GETTER(Accel, 0.0f);
-            SET_OR_TEST_GETTER(Brake, m_prev_brake);
-            SET_OR_TEST_GETTER(Nitro, false);
-        }
-        break;
-    }
     case PA_BRAKE:
         SET_OR_TEST(m_prev_brake, value!=0);
         // let's consider below that to be a deadzone
@@ -208,10 +210,12 @@ bool PlayerController::action(PlayerAction action, int value, bool dry_run)
         }
         break;
     case PA_NITRO:
-        // This basically keeps track whether the button still is being pressed
-        SET_OR_TEST(m_prev_nitro, value != 0 );
-        // Enable nitro only when also accelerating
-        SET_OR_TEST_GETTER(Nitro, ((value!=0) && m_controls->getAccel()) );
+        if (can_use_nitro()) {
+            // This basically keeps track whether the button still is being pressed
+            SET_OR_TEST(m_prev_nitro, value != 0 );
+            // Enable nitro only when also accelerating
+            SET_OR_TEST_GETTER(Nitro, ((value!=0) && m_controls->getAccel()) );
+        }
         break;
     case PA_RESCUE:
         SET_OR_TEST_GETTER(Rescue, value!=0);
@@ -223,21 +227,24 @@ bool PlayerController::action(PlayerAction action, int value, bool dry_run)
         SET_OR_TEST_GETTER(LookBack, value!=0);
         break;
     case PA_DRIFT:
-        if (value == 0)
+        if (can_drift())
         {
-            SET_OR_TEST_GETTER(SkidControl, KartControl::SC_NONE);
-        }
-        else if (m_controls->getSkidControl() == KartControl::SC_NONE)
-        {
-            if (m_steer_val == 0)
+            if (value == 0)
             {
-                SET_OR_TEST_GETTER(SkidControl, KartControl::SC_NO_DIRECTION);
+                SET_OR_TEST_GETTER(SkidControl, KartControl::SC_NONE);
             }
-            else
+            else if (m_controls->getSkidControl() == KartControl::SC_NONE)
             {
-                SET_OR_TEST_GETTER(SkidControl, m_steer_val<0
-                                                ? KartControl::SC_RIGHT
-                                                : KartControl::SC_LEFT  );
+                if (m_steer_val == 0)
+                {
+                    SET_OR_TEST_GETTER(SkidControl, KartControl::SC_NO_DIRECTION);
+                }
+                else
+                {
+                    SET_OR_TEST_GETTER(SkidControl, m_steer_val<0
+                                                    ? KartControl::SC_RIGHT
+                                                    : KartControl::SC_LEFT  );
+                }
             }
         }
         break;

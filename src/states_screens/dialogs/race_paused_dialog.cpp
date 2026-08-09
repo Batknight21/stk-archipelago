@@ -53,6 +53,8 @@
 
 #include <IrrlichtDevice.h>
 
+#include "Archipelago.h"
+
 #ifndef SERVER_ONLY
 #include <ge_main.hpp>
 #include <ge_vulkan_driver.hpp>
@@ -357,7 +359,10 @@ GUIEngine::EventPropagation
 
                 // Pause story mode timer when quitting story mode
                 if (from_overworld)
+                {
                     story_mode_timer->pauseTimer(/*loading screen*/ false);
+                    AP_Shutdown();
+                }
 
                 if (RaceManager::get()->raceWasStartedFromOverworld())
                 {

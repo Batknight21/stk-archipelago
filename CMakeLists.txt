@@ -214,6 +214,10 @@ endif()
 add_subdirectory("${PROJECT_SOURCE_DIR}/lib/bullet")
 include_directories(BEFORE "${PROJECT_SOURCE_DIR}/lib/bullet/src")
 
+# Build the Archipelago library
+add_subdirectory("${PROJECT_SOURCE_DIR}/lib/APCpp")
+include_directories(BEFORE "${PROJECT_SOURCE_DIR}/lib/APCpp")
+
 # Build the DNS C library
 if(USE_DNS_C)
     add_definitions(-DDNS_C)
@@ -696,6 +700,7 @@ endif()
 
 # Common library dependencies
 target_link_libraries(supertuxkart
+    APCpp
     bulletdynamics
     bulletcollision
     bulletmath

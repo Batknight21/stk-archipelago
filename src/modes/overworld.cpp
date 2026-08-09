@@ -17,6 +17,7 @@
 
 #include "modes/overworld.hpp"
 
+#include "archipelago/stk_archipelago.hpp"
 #include "audio/music_manager.hpp"
 #include "challenges/unlock_manager.hpp"
 #include "config/player_manager.hpp"
@@ -61,6 +62,8 @@ OverWorld::~OverWorld()
 /** Function to simplify the start process */
 void OverWorld::enterOverWorld()
 {
+    // clear unlocked archipelago features so that they are not shown next time
+    clear_unlocked();
     // update point count and the list of locked/unlocked stuff
     PlayerManager::getCurrentPlayer()->computeActive();
 
@@ -272,7 +275,8 @@ void OverWorld::onFirePressed(Controller* who)
                 const unsigned int val2 = challenge->getNumChallenges();
                 bool enough_challenges = (PlayerManager::getCurrentPlayer()->getNumCompletedChallenges() >= val2);
 #endif
-                bool unlocked = enough_challenges && (PlayerManager::getCurrentPlayer()->getPoints() >= val);
+                bool unlocked = enough_challenges &&
+                    (val == 0 || is_unlocked_by_archipelago(challenges[n].m_challenge_id));
                 
                 if (UserConfigParams::m_unlock_everything > 0)
                     unlocked = true;

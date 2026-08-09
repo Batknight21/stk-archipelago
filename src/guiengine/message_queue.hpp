@@ -36,6 +36,7 @@ namespace MessageQueue
     {
         MT_FRIEND,
         MT_ACHIEVEMENT,
+        MT_ARCHIPELAGO,
         MT_GENERIC,
         MT_ERROR,
         MT_PROGRESS

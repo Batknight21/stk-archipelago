@@ -123,6 +123,8 @@ public:
             m_render_type = "achievement-message::neutral";
         else if (mt == MessageQueue::MT_ERROR)
             m_render_type = "error-message::neutral";
+        else if (mt == MessageQueue::MT_ARCHIPELAGO)
+            m_render_type = "archipelago-message::neutral";
         else if (mt == MessageQueue::MT_GENERIC)
             m_render_type = "generic-message::neutral";
         else

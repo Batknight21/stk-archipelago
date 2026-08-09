@@ -19,6 +19,9 @@
 
 #include "challenges/story_mode_status.hpp"
 
+#include <iostream>
+
+#include "archipelago/stk_archipelago.hpp"
 #include "challenges/challenge_status.hpp"
 #include "challenges/challenge_data.hpp"
 #include "challenges/story_mode_timer.hpp"
@@ -111,6 +114,11 @@ void StoryModeStatus::computeActive(bool first_call)
     m_hard_challenges = 0;
     m_best_challenges = 0;
 
+    if (first_call)
+    {
+        set_recent_points(m_points);
+    }
+
     m_locked_features.clear(); // start afresh
 
     std::map<std::string, ChallengeStatus*>::const_iterator i;
@@ -174,17 +182,38 @@ void StoryModeStatus::computeActive(bool first_call)
 
     unlockFeatureByList();
 
+    // Check if something was unlocked, if so, send it to the multiworld
+    if (get_recent_points() != m_points)
+    {
+        for (i = m_challenges_state.begin(); i != m_challenges_state.end();  i++)
+        {
+            if (i->second->getData()->getNumTrophies() > m_points_before
+                && i->second->getData()->getNumTrophies() <= m_points)
+            {
+                unlocked(i->second->getData());
+            }
+        }
+        set_recent_points(m_points);
+    }
+
     //Actually lock the tracks
     for (i = m_challenges_state.begin(); i != m_challenges_state.end();  i++)
     {
-        if (m_points < i->second->getData()->getNumTrophies())
+        if (i->second->getData()->getNumTrophies() != 0 && !is_unlocked_by_archipelago(i->second->getData()->getChallengeId()))
         {
             if (i->second->getData()->isSingleRace())
+            {
                 m_locked_features[i->second->getData()->getTrackId()] = true;
+                std::cout << "locking race " << i->second->getData()->getTrackId() << "\n";
+            }
             else if (i->second->getData()->isGrandPrix())
+            {
                 m_locked_features[i->second->getData()->getGPId()] = true;
+                std::cout << "locking gp " << i->second->getData()->getGPId() << "\n";
+            }
             else
             {
+                std::cout << "locking " << i->second->getData()->getChallengeId() << "\n";
                 // FIXME when more challenge types are implemented.
                 assert(false);
             }
@@ -205,13 +234,19 @@ void StoryModeStatus::unlockFeatureByList()
         {
             if (i->second->isSolvedAtAnyDifficulty())
                 continue;
-
-            bool newly_solved = unlock_manager->unlockByPoints(m_points,i->second);
-            newly_solved = newly_solved || unlock_manager->unlockSpecial(i->second, getNumReqMetInLowerDiff());
+            bool newly_solved = unlock_manager->canUnlockByPoints(m_points,i->second);
+            newly_solved = newly_solved || unlock_manager->canUnlockSpecial(i->second, getNumReqMetInLowerDiff());
 
             // Add to list of recently unlocked features
-            if(newly_solved)
-                m_unlocked_features.push_back(i->second->getData());
+            // if(newly_solved)
+            //     m_unlocked_features.push_back(i->second->getData());
+
+            // Send the unlock to the multiworld as location
+            // if (newly_solved)
+            // {
+            //     std::cout << "something was unlocked" << "\n";
+            //     unlocked(i->second->getData());
+            // }
 
             //Retrieve the smallest number of points for the next unlockable
             if (i->second->getData()->getNumTrophies() > m_points && (m_next_unlock_points == 0
@@ -232,7 +267,14 @@ void StoryModeStatus::lockFeature(ChallengeStatus *challenge_status)
     const unsigned int amount = (unsigned int)features.size();
     for (unsigned int n=0; n<amount; n++)
     {
-        m_locked_features[features[n].m_name] = true;
+        if (features[n].m_name == "difficulty_best")
+        {
+            if (!difficulty_unlocked(RaceManager::DIFFICULTY_BEST))
+            {
+                m_locked_features[features[n].m_name] = true;
+            }
+        }
+        else m_locked_features[features[n].m_name] = true;
     }
 }   // lockFeature
 
@@ -286,6 +328,7 @@ void StoryModeStatus::raceFinished()
         m_current_challenge->isActive(RaceManager::get()->getDifficulty()) &&
         m_current_challenge->getData()->isChallengeFulfilled()           )
     {
+        challenge_completed(RaceManager::get()->getDifficulty(), m_current_challenge->getData()->getChallengeId());
         // cast const away so that the challenge can be set to fulfilled.
         // The 'clean' implementation would involve searching the challenge
         // in m_challenges_state, which is a bit of an overkill
@@ -331,6 +374,12 @@ void StoryModeStatus::grandPrixFinished()
         }
 
         RaceManager::get()->setDifficulty(difficulty);
+
+        if (m_current_challenge->getData()->isGPFulfilled())
+        {
+            challenge_completed(RaceManager::get()->getDifficulty(), m_current_challenge->getData()->getChallengeId());
+        }
+
         unlockFeature(const_cast<ChallengeStatus*>(m_current_challenge), difficulty);
     }   // if isActive && challenge solved
 

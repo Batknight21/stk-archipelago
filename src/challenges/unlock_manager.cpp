@@ -41,6 +41,8 @@
 #include <stdio.h>
 #include <iostream>
 
+#include "archipelago/stk_archipelago.hpp"
+
 UnlockManager* unlock_manager=0;
 //-----------------------------------------------------------------------------
 
@@ -257,26 +259,36 @@ void UnlockManager::findWhatWasUnlocked(int points_before, int points_now,
     if (UserConfigParams::m_unlock_everything > 0)
         return;
 
-    ChallengeData* c = NULL;
+    // ChallengeData* c = NULL;
 
-    for (AllChallengesType::iterator it = m_all_challenges.begin();
-         it != m_all_challenges.end(); it++)
+    // for (AllChallengesType::iterator it = m_all_challenges.begin();
+    //      it != m_all_challenges.end(); it++)
+    // {
+    //     c = it->second;
+    //     if (c->getNumTrophies() > points_before &&
+    //         c->getNumTrophies() <= points_now      )
+    //     {
+    //         if (c->getMode() == ChallengeData::CM_SINGLE_RACE && c->getTrackId() != "")
+    //         {
+    //             if (!PlayerManager::getCurrentPlayer()->isLocked(c->getTrackId()))
+    //                 tracks.push_back(c->getTrackId());
+    //         }
+    //         else if (c->getMode() == ChallengeData::CM_GRAND_PRIX && c->getGPId() != "")
+    //         {
+    //             if (!PlayerManager::getCurrentPlayer()->isLocked(c->getGPId()))
+    //                 gps.push_back(c->getGPId());
+    //         }
+    //     }
+    // }
+
+    for (const std::string& trackId : get_recently_unlocked_tracks())
     {
-        c = it->second;
-        if (c->getNumTrophies() > points_before &&
-            c->getNumTrophies() <= points_now      )
-        {
-            if (c->getMode() == ChallengeData::CM_SINGLE_RACE && c->getTrackId() != "")
-            {
-                if (!PlayerManager::getCurrentPlayer()->isLocked(c->getTrackId()))
-                    tracks.push_back(c->getTrackId());
-            }
-            else if (c->getMode() == ChallengeData::CM_GRAND_PRIX && c->getGPId() != "")
-            {
-                if (!PlayerManager::getCurrentPlayer()->isLocked(c->getGPId()))
-                    gps.push_back(c->getGPId());
-            }
-        }
+        tracks.push_back(trackId);
+    }
+
+    for (const std::string& gpId : get_recently_unlocked_gps())
+    {
+        gps.push_back(gpId);
     }
 
 
@@ -317,6 +329,15 @@ bool UnlockManager::unlockByPoints(int points, ChallengeStatus* unlock_list)
     return false;
 } // unlockByPoints
 
+bool UnlockManager::canUnlockByPoints(int points, ChallengeStatus* unlock_list)
+{
+    if( unlock_list!=NULL && unlock_list->getData()->getNumTrophies() <= points)
+    {
+        return true;
+    }
+    return false;
+}
+
 //-----------------------------------------------------------------------------
 /** This functions sets as completed the "challenges" requiring some special conditions
  *  Returns true if the challenge has been completed
@@ -336,5 +357,20 @@ bool UnlockManager::unlockSpecial(ChallengeStatus* unlock_list, int max_req_in_l
     }
     return false;
 } // unlockSpecial
+
+bool UnlockManager::canUnlockSpecial(ChallengeStatus* unlock_list, int max_req_in_lower_diff)
+{
+    if ( unlock_list!=NULL && unlock_list->getData()->getSpecialType() != ChallengeData::SPECIAL_NONE)
+    {
+        if (unlock_list->getData()->getSpecialType() == ChallengeData::SPECIAL_MAX_REQ_IN_LOWER_DIFF)
+        {
+            if (max_req_in_lower_diff >= unlock_list->getData()->getSpecialValue())
+            {
+                return true;
+            }
+        }
+    }
+    return false;
+}
 
 /* EOF */

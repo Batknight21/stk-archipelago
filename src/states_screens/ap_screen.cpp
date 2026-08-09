@@ -4,6 +4,9 @@
 
 #include "ap_screen.hpp"
 
+#include <iostream>
+
+#include "archipelago/stk_archipelago.hpp"
 #include "challenges/story_mode_timer.hpp"
 #include "config/player_manager.hpp"
 #include "config/user_config.hpp"
@@ -29,18 +32,26 @@ void APConnectScreen::loadedFromFile()
 void APConnectScreen::init()
 {
     Screen::init();
+    m_server_address_box = getWidget<TextBoxWidget>("address");
+    m_server_address_box->setText("archipelago.gg:");
     m_slot_name_box = getWidget<TextBoxWidget>("slot_name");
-    m_server_address = getWidget<TextBoxWidget>("address");
-    m_server_address->setText("archipelago.gg:");
+    m_password_box = getWidget<TextBoxWidget>("password");
 }
 
 void APConnectScreen::eventCallback(Widget* widget, const std::string& name, const int playerID)
 {
     if (name == "continue")
     {
+        start_ap(m_server_address_box->getText(), m_slot_name_box->getText(), m_password_box->getText());
         NetworkConfig::get()->unsetNetworking();
+        PlayerProfile *other_player = PlayerManager::get()->getPlayer(m_slot_name_box->getText());
         PlayerProfile *player = PlayerManager::get()->addNewPlayer(m_slot_name_box->getText());
         PlayerManager::get()->setCurrentPlayer(player);
+        if (other_player != nullptr)
+        {
+            player->setFirstTime(other_player->isFirstTime());
+            PlayerManager::get()->deletePlayer(other_player);
+        }
         PlayerManager::get()->save();
 
         // Start the story mode (and speedrun) timer

@@ -75,6 +75,8 @@
 
 #include <algorithm>
 
+#include "archipelago/stk_archipelago.hpp"
+
 /** Constructor, initialises internal data structures.
  */
 RaceResultGUI::RaceResultGUI() : Screen("race_result.stkgui",
@@ -494,6 +496,8 @@ void RaceResultGUI::eventCallback(GUIEngine::Widget* widget,
 
                 if (gameCompleted)
                 {
+                    // send the goal to the multiworld
+                    goal_nolok_completed();
                     // clear the race
 
                     // kart will no longer be available during cutscene, drop reference

@@ -17,6 +17,7 @@
 
 #include "states_screens/dialogs/select_challenge.hpp"
 
+#include "archipelago/stk_archipelago.hpp"
 #include "challenges/challenge_status.hpp"
 #include "challenges/unlock_manager.hpp"
 #include "config/player_manager.hpp"
@@ -31,6 +32,7 @@
 #include "io/file_manager.hpp"
 #include "modes/world.hpp"
 #include "race/grand_prix_manager.hpp"
+#include "race/race_manager.hpp"
 #include "race/race_manager.hpp"
 #include "tracks/track_manager.hpp"
 #include "tracks/track.hpp"
@@ -183,8 +185,54 @@ SelectChallengeDialog::SelectChallengeDialog(const float percentWidth,
         getWidget<LabelWidget>("title")->setText(track_name, true);
     }
 
-    
-    if (PlayerManager::getCurrentPlayer()->isLocked("difficulty_best"))
+    if (was_completed(RaceManager::DIFFICULTY_EASY, challenge_id))
+    {
+        getWidget<IconButtonWidget>("novice")->setBadge(OK_BADGE);
+    }
+    else
+    {
+        getWidget<IconButtonWidget>("novice")->setBadge(ARCHIPELAGO_BADGE);
+    }
+
+    if (!difficulty_unlocked(RaceManager::DIFFICULTY_MEDIUM))
+    {
+        getWidget<IconButtonWidget>("intermediate")->setBadge(LOCKED_BADGE);
+        getWidget<IconButtonWidget>("intermediate")->setActive(false);
+    }
+    else
+    {
+        getWidget<IconButtonWidget>("intermediate")->unsetBadge(LOCKED_BADGE);
+        getWidget<IconButtonWidget>("intermediate")->setActive(true);
+        if (was_completed(RaceManager::DIFFICULTY_MEDIUM, challenge_id))
+        {
+            getWidget<IconButtonWidget>("intermediate")->setBadge(OK_BADGE);
+        }
+        else
+        {
+            getWidget<IconButtonWidget>("intermediate")->setBadge(ARCHIPELAGO_BADGE);
+        }
+    }
+
+    if (!difficulty_unlocked(RaceManager::DIFFICULTY_HARD))
+    {
+        getWidget<IconButtonWidget>("expert")->setBadge(LOCKED_BADGE);
+        getWidget<IconButtonWidget>("expert")->setActive(false);
+    }
+    else
+    {
+        getWidget<IconButtonWidget>("expert")->unsetBadge(LOCKED_BADGE);
+        getWidget<IconButtonWidget>("expert")->setActive(true);
+        if (was_completed(RaceManager::DIFFICULTY_HARD, challenge_id))
+        {
+            getWidget<IconButtonWidget>("expert")->setBadge(OK_BADGE);
+        }
+        else
+        {
+            getWidget<IconButtonWidget>("expert")->setBadge(ARCHIPELAGO_BADGE);
+        }
+    }
+
+    if (!difficulty_unlocked(RaceManager::DIFFICULTY_BEST))
     {
         getWidget<IconButtonWidget>("supertux")->setBadge(LOCKED_BADGE);
         getWidget<IconButtonWidget>("supertux")->setActive(false);
@@ -193,6 +241,14 @@ SelectChallengeDialog::SelectChallengeDialog(const float percentWidth,
     {
         getWidget<IconButtonWidget>("supertux")->unsetBadge(LOCKED_BADGE);
         getWidget<IconButtonWidget>("supertux")->setActive(true);
+        if (was_completed(RaceManager::DIFFICULTY_BEST, challenge_id))
+        {
+            getWidget<IconButtonWidget>("supertux")->setBadge(OK_BADGE);
+        }
+        else
+        {
+            getWidget<IconButtonWidget>("supertux")->setBadge(ARCHIPELAGO_BADGE);
+        }
     }
 
     GUIEngine::RibbonWidget* actions =

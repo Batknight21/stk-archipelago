@@ -84,7 +84,9 @@ namespace GUIEngine
         /** A heart badge, to indicate e.g. a favorite track */
         HEART_BADGE    = 1024,
         /** A red dot badge, to indicate there's something new inside */
-        REDDOT_BADGE   = 2048
+        REDDOT_BADGE   = 2048,
+        /** An Archipelago icon to indicate a possible check */
+        ARCHIPELAGO_BADGE = 4096
     };
 
 
