@@ -1,5 +1,5 @@
 //
-// Created by tbgamer on 03.08.26.
+// Created by Batknight21 on 03.08.26.
 //
 
 #include "archipelago/stk_archipelago.hpp"
@@ -228,7 +228,7 @@ namespace APClient
         AP_Init(address_char.c_str(), "Super Tux Kart", slot_char.c_str(), password_char.c_str());
 
         unlocked_challenges.clear();
-#ifndef NDEBUG
+#ifdef DEBUG
         unlocked_challenges[CORNFIELD_CROSSING] = 1;
         unlocked_challenges[SNOW_PEAK] = 1;
         unlocked_challenges[VOLCANO_ISLAND] = 1;
@@ -522,6 +522,8 @@ namespace APClient
                  ->getTrackObject("", "LDoor")->setEnabled(false);
             track->getTrackObjectManager()
                  ->getTrackObject("", "LDoor.001")->setEnabled(true);
+            track->getTrackObjectManager()
+                 ->getTrackObject("", "Empty.043")->setEnabled(false);
         }
     }
 
