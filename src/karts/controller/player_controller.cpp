@@ -2,6 +2,7 @@
 //  SuperTuxKart - a fun racing game with go-kart
 //  Copyright (C) 2004-2015 Steve Baker <sjbaker1@airmail.net>
 //  Copyright (C) 2006-2015 Joerg Henrichs, Steve Baker
+//  Modified by Batknight21 2026
 //
 //  This program is free software; you can redistribute it and/or
 //  modify it under the terms of the GNU General Public License
@@ -210,7 +211,7 @@ bool PlayerController::action(PlayerAction action, int value, bool dry_run)
         }
         break;
     case PA_NITRO:
-        if (can_use_nitro()) {
+        if (APClient::can_use_nitro()) {
             // This basically keeps track whether the button still is being pressed
             SET_OR_TEST(m_prev_nitro, value != 0 );
             // Enable nitro only when also accelerating
@@ -224,10 +225,13 @@ bool PlayerController::action(PlayerAction action, int value, bool dry_run)
         SET_OR_TEST_GETTER(Fire, value!=0);
         break;
     case PA_LOOK_BACK:
-        SET_OR_TEST_GETTER(LookBack, value!=0);
+        if (APClient::can_look_back())
+        {
+            SET_OR_TEST_GETTER(LookBack, value!=0);
+        }
         break;
     case PA_DRIFT:
-        if (can_drift())
+        if (APClient::can_drift())
         {
             if (value == 0)
             {

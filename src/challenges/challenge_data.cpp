@@ -1,6 +1,7 @@
 //
 //  SuperTuxKart - a fun racing game with go-kart
 //  Copyright (C) 2008-2015 Joerg Henrichs
+//  Modified by Batknight21 2026
 //
 //  This program is free software; you can redistribute it and/or
 //  modify it under the terms of the GNU General Public License
@@ -726,7 +727,7 @@ int ChallengeData::getNumTrophies() const
 {
     if (m_id == "fortmagma")
     {
-        return get_fort_magma_points();
+        return APClient::get_fort_magma_points();
     }
     else return m_num_trophies;
 }

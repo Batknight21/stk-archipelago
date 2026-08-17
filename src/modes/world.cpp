@@ -1,6 +1,7 @@
 //
 //  SuperTuxKart - a fun racing game with go-kart
 //  Copyright (C) 2006-2015 SuperTuxKart-Team
+//  Modified by Batknight21 2026
 //
 //  This program is free software; you can redistribute it and/or
 //  modify it under the terms of the GNU General Public License
@@ -1066,7 +1067,7 @@ void World::updateWorld(int ticks)
 
     if (RaceManager::get()->isLinearRaceMode())
     {
-        in_race();
+        APClient::in_race();
     }
 
 #ifdef DEBUG

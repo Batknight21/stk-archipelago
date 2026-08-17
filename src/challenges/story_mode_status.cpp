@@ -1,6 +1,7 @@
 //
 //  SuperTuxKart - a fun racing game with go-kart
 //  Copyright (C) 2010-2015 SuperTuxKart-Team
+//  Modified by Batknight21 2026
 //
 //  This program is free software; you can redistribute it and/or
 //  modify it under the terms of the GNU General Public License
@@ -116,7 +117,7 @@ void StoryModeStatus::computeActive(bool first_call)
 
     if (first_call)
     {
-        set_recent_points(m_points);
+        APClient::set_recent_points(m_points);
     }
 
     m_locked_features.clear(); // start afresh
@@ -183,23 +184,23 @@ void StoryModeStatus::computeActive(bool first_call)
     unlockFeatureByList();
 
     // Check if something was unlocked, if so, send it to the multiworld
-    if (get_recent_points() != m_points)
+    if (APClient::get_recent_points() != m_points)
     {
         for (i = m_challenges_state.begin(); i != m_challenges_state.end();  i++)
         {
             if (i->second->getData()->getNumTrophies() > m_points_before
                 && i->second->getData()->getNumTrophies() <= m_points)
             {
-                unlocked(i->second->getData());
+                APClient::unlocked(i->second->getData());
             }
         }
-        set_recent_points(m_points);
+        APClient::set_recent_points(m_points);
     }
 
     //Actually lock the tracks
     for (i = m_challenges_state.begin(); i != m_challenges_state.end();  i++)
     {
-        if (i->second->getData()->getNumTrophies() != 0 && !is_unlocked_by_archipelago(i->second->getData()->getChallengeId(), m_points))
+        if (i->second->getData()->getNumTrophies() != 0 && !APClient::is_unlocked_by_archipelago(i->second->getData()->getChallengeId(), m_points))
         {
             if (i->second->getData()->isSingleRace())
             {
@@ -269,7 +270,7 @@ void StoryModeStatus::lockFeature(ChallengeStatus *challenge_status)
     {
         if (features[n].m_name == "difficulty_best")
         {
-            if (!difficulty_unlocked(RaceManager::DIFFICULTY_BEST))
+            if (!APClient::difficulty_best_unlocked())
             {
                 m_locked_features[features[n].m_name] = true;
             }
@@ -328,7 +329,7 @@ void StoryModeStatus::raceFinished()
         m_current_challenge->isActive(RaceManager::get()->getDifficulty()) &&
         m_current_challenge->getData()->isChallengeFulfilled()           )
     {
-        challenge_completed(RaceManager::get()->getDifficulty(), m_current_challenge->getData()->getChallengeId());
+        APClient::challenge_completed(RaceManager::get()->getDifficulty(), m_current_challenge->getData()->getChallengeId());
         // cast const away so that the challenge can be set to fulfilled.
         // The 'clean' implementation would involve searching the challenge
         // in m_challenges_state, which is a bit of an overkill
@@ -377,7 +378,7 @@ void StoryModeStatus::grandPrixFinished()
 
         if (m_current_challenge->getData()->isGPFulfilled())
         {
-            challenge_completed(RaceManager::get()->getDifficulty(), m_current_challenge->getData()->getChallengeId());
+            APClient::challenge_completed(RaceManager::get()->getDifficulty(), m_current_challenge->getData()->getChallengeId());
         }
 
         unlockFeature(const_cast<ChallengeStatus*>(m_current_challenge), difficulty);
@@ -386,6 +387,9 @@ void StoryModeStatus::grandPrixFinished()
     // Calculate m_points again to count the current GP.
     computeActive();
     RaceManager::get()->setCoinTarget(0);
+
+    // check if the player has completed the gp goal (if selected)
+    APClient::gp_finished();
 }   // grandPrixFinished
 
 //-----------------------------------------------------------------------------

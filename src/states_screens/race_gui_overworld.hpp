@@ -2,6 +2,7 @@
 //  SuperTuxKart - a fun racing game with go-kart
 //  Copyright (C) 2004-2015 Steve Baker <sjbaker1@airmail.net>
 //  Copyright (C) 2006-2015 Joerg Henrichs, SuperTuxKart-Team, Steve Baker
+//  Modified by Batknight21 2026
 //
 //  This program is free software; you can redistribute it and/or
 //  modify it under the terms of the GNU General Public License
@@ -55,8 +56,9 @@ private:
     // -------------------------
     video::ITexture* m_trophy[4];
     video::ITexture *m_lock;
+    video::ITexture *m_key;
     video::ITexture *m_open_challenge;
-    video::ITexture *m_locked_bonus;
+    // video::ITexture *m_locked_bonus;
 
 
     video::ITexture* m_icons[7];

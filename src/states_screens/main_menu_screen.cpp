@@ -1,5 +1,6 @@
 //  SuperTuxKart - a fun racing game with go-kart
 //  Copyright (C) 2009-2015 Marianne Gagnon
+//  Modified by Batknight21 2026
 //
 //  This program is free software; you can redistribute it and/or
 //  modify it under the terms of the GNU General Public License
@@ -338,8 +339,8 @@ void MainMenuScreen::onUpdate(float delta)
     }
 
     // Ask if user want to play tutorial when profile is newly created
-    if (player->getUseFrequency() != 0)
-        return;
+    // if (player->getUseFrequency() != 0)
+    //     return;
 
 #ifdef ANDROID
     // Don't show tutorial dialog on Android TV
@@ -348,23 +349,23 @@ void MainMenuScreen::onUpdate(float delta)
 #endif
 
     player->incrementUseFrequency();
-    class PlayTutorial :
-          public MessageDialog::IConfirmDialogListener
-    {
-    public:
-        virtual void onConfirm()
-        {
-            GUIEngine::ModalDialog::dismiss();
-            TutorialUtils::startTutorial();
-        }   // onConfirm
-    };   // PlayTutorial
-
-    MessageDialog* dialog =
-    new MessageDialog(_("Would you like to play the tutorial of the game?"),
-        MessageDialog::MESSAGE_DIALOG_YESNO, new PlayTutorial(),
-        true/*delete_listener*/, true/*from_queue*/);
-    GUIEngine::DialogQueue::get()->pushDialog(dialog,
-        false/*closes_any_dialog*/);
+    // class PlayTutorial :
+    //       public MessageDialog::IConfirmDialogListener
+    // {
+    // public:
+    //     virtual void onConfirm()
+    //     {
+    //         GUIEngine::ModalDialog::dismiss();
+    //         TutorialUtils::startTutorial();
+    //     }   // onConfirm
+    // };   // PlayTutorial
+    //
+    // MessageDialog* dialog =
+    // new MessageDialog(_("Would you like to play the tutorial of the game?"),
+    //     MessageDialog::MESSAGE_DIALOG_YESNO, new PlayTutorial(),
+    //     true/*delete_listener*/, true/*from_queue*/);
+    // GUIEngine::DialogQueue::get()->pushDialog(dialog,
+    //     false/*closes_any_dialog*/);
 #endif
 }   // onUpdate
 

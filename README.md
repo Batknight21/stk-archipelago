@@ -1,15 +1,6 @@
-# SuperTuxKart
-[![Linux build status](https://github.com/supertuxkart/stk-code/actions/workflows/linux.yml/badge.svg)](https://github.com/supertuxkart/stk-code/actions/workflows/linux.yml)
-[![Apple build status](https://github.com/supertuxkart/stk-code/actions/workflows/apple.yml/badge.svg)](https://github.com/supertuxkart/stk-code/actions/workflows/apple.yml)
-[![Windows build status](https://github.com/supertuxkart/stk-code/actions/workflows/windows.yml/badge.svg)](https://github.com/supertuxkart/stk-code/actions/workflows/windows.yml)
-[![Switch build status](https://github.com/supertuxkart/stk-code/actions/workflows/switch.yml/badge.svg)](https://github.com/supertuxkart/stk-code/actions/workflows/switch.yml)
-[![#supertuxkart on the libera IRC network](https://img.shields.io/badge/libera-%23supertuxkart-brightgreen.svg)](https://web.libera.chat/?channels=#supertuxkart)
+# SuperTuxKart Archipelago
 
-SuperTuxKart is a free kart racing game. It focuses on fun and not on realistic kart physics. Instructions can be found on the in-game help page.
-
-The SuperTuxKart homepage can be found at <https://supertuxkart.net/>. There is also our [FAQ](https://supertuxkart.net/FAQ) and information on how get in touch with the [community](https://supertuxkart.net/Community).
-
-Latest release binaries can be found [here](https://github.com/supertuxkart/stk-code/releases/latest), and preview release [here](https://github.com/supertuxkart/stk-code/releases/preview).
+A SuperTuxKart Archipelago implementation. SuperTuxKart is a free racing game 
 
 ## Hardware Requirements
 To run SuperTuxKart, make sure that your computer's specifications are equal or higher than the following specifications:
@@ -21,20 +12,32 @@ To run SuperTuxKart, make sure that your computer's specifications are equal or 
 * Minimum disk space: 700 MB
 * Ideally, you'll want a joystick with at least 6 buttons.
 
+## Set Up
+The setup is pretty simple:
+* Download the AP-World and send it to the host
+* Create an options file (usually using the options creator in the archipelago launcher)
+* Download the game client from the releases
+* Run the game and click story. This opens a new menu where you can connect to the server
+* Wait for the host to finish and enter server address, your slot name and password (if the game has one) of your Archipelago game
+
+## How is this game randomized
+This implementation supports the story mode only.
+
+# Locations
+Completing challenges sends checks into the multiword for **every Difficulty** you complete the challenge in.
+You can see if the challenge was sent to the multiworld in the challenge GUI:
+* If the location can be completed, an archipelago symbol will be displayed
+* If it was completed already, you can see a green check symbol on the bottom left
+* Unlocking tracks by points sends additional checks to the multiworld
+
+# Items
+Every normally locked challenge can't be unlocked by points. You have to receive the Item named the same way as the track to unlock it.
+
 ## License
-The software is released under the GNU General Public License (GPL) which can be found in the file [`COPYING`](/COPYING) in the same directory as this file.
+This Project keeps the original license wich can be found [here](/COPYING)
 
 ---
 
-## 3D coordinates
-A reminder for those who are looking at the code and 3D models:
-
-SuperTuxKart: X right, Y up, Z forwards
-
-Blender: X right, Y forwards, Z up
-
-The export utilities  perform the needed transformation, so in Blender you just work with the XY plane as ground, and things will appear fine in STK (using XZ as ground in the code, obviously).
-
 ## Building from source
 
-Building instructions can be found in [`INSTALL.md`](/INSTALL.md)
+Building from source also works the same as in original SuperTuxKart. Just follow the guide in [`INSTALL.md`](/INSTALL.md)

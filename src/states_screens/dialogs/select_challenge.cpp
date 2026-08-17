@@ -1,5 +1,6 @@
 //  SuperTuxKart - a fun racing game with go-kart
 //  Copyright (C) 2012-2015 Marianne Gagnon
+//  Modified by Batknight21 2026
 //
 //  This program is free software; you can redistribute it and/or
 //  modify it under the terms of the GNU General Public License
@@ -185,7 +186,7 @@ SelectChallengeDialog::SelectChallengeDialog(const float percentWidth,
         getWidget<LabelWidget>("title")->setText(track_name, true);
     }
 
-    if (was_completed(RaceManager::DIFFICULTY_EASY, challenge_id))
+    if (APClient::was_completed(RaceManager::DIFFICULTY_EASY, challenge_id))
     {
         getWidget<IconButtonWidget>("novice")->setBadge(OK_BADGE);
     }
@@ -194,7 +195,7 @@ SelectChallengeDialog::SelectChallengeDialog(const float percentWidth,
         getWidget<IconButtonWidget>("novice")->setBadge(ARCHIPELAGO_BADGE);
     }
 
-    if (!difficulty_unlocked(RaceManager::DIFFICULTY_MEDIUM))
+    if (!APClient::difficulty_unlocked(RaceManager::DIFFICULTY_MEDIUM, challenge_id))
     {
         getWidget<IconButtonWidget>("intermediate")->setBadge(LOCKED_BADGE);
         getWidget<IconButtonWidget>("intermediate")->setActive(false);
@@ -203,7 +204,7 @@ SelectChallengeDialog::SelectChallengeDialog(const float percentWidth,
     {
         getWidget<IconButtonWidget>("intermediate")->unsetBadge(LOCKED_BADGE);
         getWidget<IconButtonWidget>("intermediate")->setActive(true);
-        if (was_completed(RaceManager::DIFFICULTY_MEDIUM, challenge_id))
+        if (APClient::was_completed(RaceManager::DIFFICULTY_MEDIUM, challenge_id))
         {
             getWidget<IconButtonWidget>("intermediate")->setBadge(OK_BADGE);
         }
@@ -213,7 +214,7 @@ SelectChallengeDialog::SelectChallengeDialog(const float percentWidth,
         }
     }
 
-    if (!difficulty_unlocked(RaceManager::DIFFICULTY_HARD))
+    if (!APClient::difficulty_unlocked(RaceManager::DIFFICULTY_HARD, challenge_id))
     {
         getWidget<IconButtonWidget>("expert")->setBadge(LOCKED_BADGE);
         getWidget<IconButtonWidget>("expert")->setActive(false);
@@ -222,7 +223,7 @@ SelectChallengeDialog::SelectChallengeDialog(const float percentWidth,
     {
         getWidget<IconButtonWidget>("expert")->unsetBadge(LOCKED_BADGE);
         getWidget<IconButtonWidget>("expert")->setActive(true);
-        if (was_completed(RaceManager::DIFFICULTY_HARD, challenge_id))
+        if (APClient::was_completed(RaceManager::DIFFICULTY_HARD, challenge_id))
         {
             getWidget<IconButtonWidget>("expert")->setBadge(OK_BADGE);
         }
@@ -232,7 +233,7 @@ SelectChallengeDialog::SelectChallengeDialog(const float percentWidth,
         }
     }
 
-    if (!difficulty_unlocked(RaceManager::DIFFICULTY_BEST))
+    if (!APClient::difficulty_unlocked(RaceManager::DIFFICULTY_BEST, challenge_id))
     {
         getWidget<IconButtonWidget>("supertux")->setBadge(LOCKED_BADGE);
         getWidget<IconButtonWidget>("supertux")->setActive(false);
@@ -241,7 +242,7 @@ SelectChallengeDialog::SelectChallengeDialog(const float percentWidth,
     {
         getWidget<IconButtonWidget>("supertux")->unsetBadge(LOCKED_BADGE);
         getWidget<IconButtonWidget>("supertux")->setActive(true);
-        if (was_completed(RaceManager::DIFFICULTY_BEST, challenge_id))
+        if (APClient::was_completed(RaceManager::DIFFICULTY_BEST, challenge_id))
         {
             getWidget<IconButtonWidget>("supertux")->setBadge(OK_BADGE);
         }
@@ -370,15 +371,7 @@ GUIEngine::EventPropagation SelectChallengeDialog::processEvent(const std::strin
                     c_data->setRace(RaceManager::DIFFICULTY_HARD);
                     break;
                 case 3:
-                    if (UserConfigParams::m_difficulty == RaceManager::DIFFICULTY_BEST &&
-                        PlayerManager::getCurrentPlayer()->isLocked("difficulty_best"))
-                    {
-                        c_data->setRace(RaceManager::DIFFICULTY_HARD);
-                    }
-                    else
-                    {
-                        c_data->setRace(RaceManager::DIFFICULTY_BEST);
-                    }
+                    c_data->setRace(RaceManager::DIFFICULTY_BEST);
                     break;
             }
             RaceManager::get()->setupPlayerKartInfo();

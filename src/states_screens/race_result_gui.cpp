@@ -1,6 +1,7 @@
 //
 //  SuperTuxKart - a fun racing game with go-kart
 //  Copyright (C) 2010-2015 Joerg Henrichs
+//  Modified by Batknight21 2026
 //
 //  This program is free software; you can redistribute it and/or
 //  modify it under the terms of the GNU General Public License
@@ -496,6 +497,7 @@ void RaceResultGUI::eventCallback(GUIEngine::Widget* widget,
 
                 if (gameCompleted)
                 {
+                    APClient::nolok_defeated(RaceManager::get()->getDifficulty());
                     // clear the race
 
                     // kart will no longer be available during cutscene, drop reference

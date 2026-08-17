@@ -1,5 +1,6 @@
 //  SuperTuxKart - a fun racing game with go-kart
 //  Copyright (C) 2009-2015 Marianne Gagnon
+//  Modified by Batknight21 2026
 //
 //  This program is free software; you can redistribute it and/or
 //  modify it under the terms of the GNU General Public License
@@ -35,6 +36,12 @@
 #include "utils/stk_process.hpp"
 
 #include <cstring>
+
+#include "offline_kart_selection.hpp"
+#include "challenges/story_mode_timer.hpp"
+#include "config/player_manager.hpp"
+#include "config/user_config.hpp"
+#include "modes/overworld.hpp"
 
 using namespace GUIEngine;
 
@@ -181,6 +188,23 @@ void StateManager::escapePressed()
         if(World::getWorld()->getPhase()!=WorldStatus::RESULT_DISPLAY_PHASE
             && !ProfileWorld::isProfileMode())
             World::getWorld()->escapePressed();
+    }
+
+    // make sure that after the credit scene you come back to the overworld so reconnecting to AP is not necessary
+    else if (getCurrentScreen()->getName() == "credits")
+    {
+        story_mode_timer->startTimer();
+        const std::string default_kart = UserConfigParams::m_default_kart;
+        if (PlayerManager::getCurrentPlayer()->isLocked(default_kart))
+        {
+            KartSelectionScreen *next = OfflineKartSelectionScreen::getInstance();
+            next->setGoToOverworldNext();
+            next->setMultiplayer(false);
+            next->push();
+            return;
+        }
+        story_mode_timer->unpauseTimer(false);
+        OverWorld::enterOverWorld();
     }
     // In menus
     else

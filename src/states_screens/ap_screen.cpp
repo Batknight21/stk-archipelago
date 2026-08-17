@@ -1,5 +1,5 @@
 //
-// Created by tbgamer on 02.08.26.
+// Created by Batknight21 on 02.08.26.
 //
 
 #include "ap_screen.hpp"
@@ -35,6 +35,7 @@ void APConnectScreen::init()
     m_server_address_box = getWidget<TextBoxWidget>("address");
     m_server_address_box->setText("archipelago.gg:");
     m_slot_name_box = getWidget<TextBoxWidget>("slot_name");
+    m_slot_name_box->setText(PlayerManager::getCurrentPlayer()->getName());
     m_password_box = getWidget<TextBoxWidget>("password");
 }
 
@@ -56,7 +57,7 @@ void APConnectScreen::eventCallback(Widget* widget, const std::string& name, con
         // Start the story mode (and speedrun) timer
         story_mode_timer->startTimer();
 
-        start_ap(m_server_address_box->getText(), m_slot_name_box->getText(), m_password_box->getText());
+        APClient::start_ap(m_server_address_box->getText(), m_slot_name_box->getText(), m_password_box->getText());
 
         if (player->isFirstTime())
         {

@@ -1,6 +1,7 @@
 //
 //  SuperTuxKart - a fun racing game with go-kart
 //  Copyright (C) 2014-2015  SuperTuxKart Team
+//  Modified by Batknight21 2026
 //
 //  This program is free software; you can redistribute it and/or
 //  modify it under the terms of the GNU General Public License
@@ -67,7 +68,11 @@ namespace Scripting
             if (UserConfigParams::m_unlock_everything > 1)
                 return getChallengeCount();
 
-            return ::Track::getCurrentTrack()->getNumOfCompletedChallenges();
+            if (APClient::has_enough_keys())
+            {
+                return ::Track::getCurrentTrack()->getNumOfCompletedChallenges();
+            }
+            return 0;
         }   // getCompletedChallengesCount
 
         // --------------------------------------------------------------------
@@ -110,7 +115,7 @@ namespace Scripting
                 const unsigned int val2 = challenge->getNumChallenges();
                 bool enough_challenges = (PlayerManager::getCurrentPlayer()->getNumCompletedChallenges() >= val2);
 #endif
-            bool unlocked = enough_challenges && (val == 0 || is_unlocked_by_archipelago(challenge->getChallengeId(), val));
+            bool unlocked = enough_challenges && (val == 0 || APClient::is_unlocked_by_archipelago(challenge->getChallengeId(), val));
             return unlocked;
         }   // isChallengeUnlocked
 

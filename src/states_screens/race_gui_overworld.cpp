@@ -2,6 +2,7 @@
 //  SuperTuxKart - a fun racing game with go-kart
 //  Copyright (C) 2004-2015 Steve Baker <sjbaker1@airmail.net>
 //  Copyright (C) 2006-2015 Joerg Henrichs, SuperTuxKart-Team, Steve Baker
+//  Modified by Batknight21 2026
 //
 //  This program is free software; you can redistribute it and/or
 //  modify it under the terms of the GNU General Public License
@@ -117,7 +118,8 @@ RaceGUIOverworld::RaceGUIOverworld()
 
     m_lock           = irr_driver->getTexture(FileManager::GUI_ICON,"gui_lock.png");
     m_open_challenge = irr_driver->getTexture(FileManager::GUI_ICON,"challenge.png");
-    m_locked_bonus   = irr_driver->getTexture(FileManager::GUI_ICON,"mystery_unlock.png");
+    // m_locked_bonus   = irr_driver->getTexture(FileManager::GUI_ICON,"mystery_unlock.png");
+    m_key           = irr_driver->getTexture(FileManager::GUI_ICON,"key.png");
 
     m_icons[0] = m_lock;
     m_icons[1] = m_open_challenge;
@@ -125,7 +127,7 @@ RaceGUIOverworld::RaceGUIOverworld()
     m_icons[3] = m_trophy[1];
     m_icons[4] = m_trophy[2];
     m_icons[5] = m_trophy[3];
-    m_icons[6] = m_locked_bonus;
+    m_icons[6] = m_key;
 }   // RaceGUIOverworld
 
 // ----------------------------------------------------------------------------
@@ -266,7 +268,7 @@ void RaceGUIOverworld::drawTrophyPoints()
     const int next_unlock_points = player->getNextUnlockPoints();
     core::stringw sw(StringUtils::toString(points).c_str());
     core::stringw swg(StringUtils::toString(next_unlock_points).c_str());
-    stringw keys(get_key_display().c_str());
+    stringw keys(APClient::get_key_display().c_str());
 
     static video::SColor time_color = video::SColor(255, 255, 255, 255);
 
@@ -323,6 +325,12 @@ void RaceGUIOverworld::drawTrophyPoints()
     int middle_width = area.Width;
     area = font->getDimension(L"999");
     int large_width = area.Width;
+    area = font->getDimension(L"9/9");
+    int normal_key_width = area.Width;
+    area = font->getDimension(L"99/9");
+    int middle_key_width = area.Width;
+    area = font->getDimension(L"99/99");
+    int large_key_width = area.Width;
 
     int number_width = (points <= 9)  ? small_width  :
                        (points <= 99) ? middle_width : large_width;
@@ -342,8 +350,12 @@ void RaceGUIOverworld::drawTrophyPoints()
                                int(pos.UpperLeftCorner.X - 1.5f*size),
                                pos.UpperLeftCorner.Y + size);
 
-    draw2DImage(m_lock, dest, source, NULL,
+    draw2DImage(m_key, dest, source, NULL,
                                               NULL, true /* alpha */);
+
+    if (APClient::get_required_keys() <= 9 && APClient::get_current_keys() <= 9) number_width = normal_key_width;
+    else if ((APClient::get_required_keys() > 9) && (APClient::get_current_keys() > 9)) number_width = large_key_width;
+    else number_width = middle_key_width;
 
     pos.UpperLeftCorner.X -= int(2*size + number_width*0.5f);
 
@@ -351,28 +363,28 @@ void RaceGUIOverworld::drawTrophyPoints()
     font->draw(keys.c_str(), pos, time_color, false, vcenter, NULL, true /* ignore RTL */);
     font->setBlackBorder(false);
 
-    pos.UpperLeftCorner.X += int(0.5f*size + number_width*0.5f);
+    // pos.UpperLeftCorner.X += int(0.5f*size + number_width*0.5f);
 
-    if (next_unlock_points > points && (points + 80) >= next_unlock_points)
-    {
-        if (next_unlock_points < 9) number_width = small_width;
-        else if (next_unlock_points <99) number_width = middle_width;
-        else number_width = large_width;
-
-        dest = core::rect<s32>(int(pos.UpperLeftCorner.X - 2.5f*size),
-                               pos.UpperLeftCorner.Y,
-                               int(pos.UpperLeftCorner.X - 1.5f*size),
-                               pos.UpperLeftCorner.Y + size);
-
-        draw2DImage(m_locked_bonus, dest, source, NULL,
-                                                  NULL, true /* alpha */);
-
-        pos.UpperLeftCorner.X -= int(2*size + number_width*0.5f);
-
-        font->setBlackBorder(true);
-        font->draw(swg.c_str(), pos, time_color, false, vcenter, NULL, true /* ignore RTL */);
-        font->setBlackBorder(false);
-    }
+    // if (next_unlock_points > points && (points + 80) >= next_unlock_points)
+    // {
+    //     if (next_unlock_points < 9) number_width = small_width;
+    //     else if (next_unlock_points <99) number_width = middle_width;
+    //     else number_width = large_width;
+    //
+    //     dest = core::rect<s32>(int(pos.UpperLeftCorner.X - 2.5f*size),
+    //                            pos.UpperLeftCorner.Y,
+    //                            int(pos.UpperLeftCorner.X - 1.5f*size),
+    //                            pos.UpperLeftCorner.Y + size);
+    //
+    //     draw2DImage(m_locked_bonus, dest, source, NULL,
+    //                                               NULL, true /* alpha */);
+    //
+    //     pos.UpperLeftCorner.X -= int(2*size + number_width*0.5f);
+    //
+    //     font->setBlackBorder(true);
+    //     font->draw(swg.c_str(), pos, time_color, false, vcenter, NULL, true /* ignore RTL */);
+    //     font->setBlackBorder(false);
+    // }
 #endif
 }   // drawTrophyPoints
 
@@ -473,7 +485,7 @@ void RaceGUIOverworld::drawGlobalMiniMap()
         
         const ChallengeData* challenge = unlock_manager->getChallengeData(challenges[n].m_challenge_id);
         const unsigned int val = challenge->getNumTrophies();
-        bool unlocked = val == 0 || is_unlocked_by_archipelago(challenges[n].m_challenge_id, static_cast<int>(val));
+        bool unlocked = val == 0 || APClient::is_unlocked_by_archipelago(challenges[n].m_challenge_id, static_cast<int>(val));
         if (challenges[n].m_challenge_id == "fortmagma")
         {
             // For each track, check whether any difficulty has been completed ; fortmagma will not affect our decision (`n == m`) ; tutorial is ignored because it has no completion level
@@ -535,7 +547,7 @@ void RaceGUIOverworld::drawGlobalMiniMap()
         {
             const ChallengeData* challenge = unlock_manager->getChallengeData(challenges[n].m_challenge_id);
             const unsigned int val = challenge->getNumTrophies();
-            bool unlocked = (val == 0 || is_unlocked_by_archipelago(challenge->getChallengeId(), static_cast<int>(val)));
+            bool unlocked = (val == 0 || APClient::is_unlocked_by_archipelago(challenge->getChallengeId(), static_cast<int>(val)));
             
             if (UserConfigParams::m_unlock_everything > 0)
                 unlocked = true;
