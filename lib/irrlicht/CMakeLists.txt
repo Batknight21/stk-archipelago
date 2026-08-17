@@ -5,7 +5,6 @@ if(NOT SERVER_ONLY)
     find_package(ZLIB REQUIRED)
     include_directories("${CMAKE_CURRENT_SOURCE_DIR}/include/"
                         "${JPEG_INCLUDE_DIR}"
-                        "${PNG_INCLUDE_DIRS}"
                         "${ZLIB_INCLUDE_DIR}"
                         "${CMAKE_CURRENT_SOURCE_DIR}/../../src"
                         "${CMAKE_CURRENT_SOURCE_DIR}/../graphics_engine/include")
