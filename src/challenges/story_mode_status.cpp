@@ -325,16 +325,18 @@ void StoryModeStatus::raceFinished()
         c->setMaxReqInLowerDiff();
     }
 
-    if(m_current_challenge                                           &&
-        m_current_challenge->isActive(RaceManager::get()->getDifficulty()) &&
-        m_current_challenge->getData()->isChallengeFulfilled()           )
+    if(m_current_challenge && m_current_challenge->isActive(RaceManager::get()->getDifficulty()))
     {
-        APClient::challenge_completed(RaceManager::get()->getDifficulty(), m_current_challenge->getData()->getChallengeId());
-        // cast const away so that the challenge can be set to fulfilled.
-        // The 'clean' implementation would involve searching the challenge
-        // in m_challenges_state, which is a bit of an overkill
-        unlockFeature(const_cast<ChallengeStatus*>(m_current_challenge),
-                      RaceManager::get()->getDifficulty());
+        if (m_current_challenge->getData()->isChallengeFulfilled())
+        {
+            APClient::challenge_completed(RaceManager::get()->getDifficulty(), m_current_challenge->getData()->getChallengeId());
+            // cast const away so that the challenge can be set to fulfilled.
+            // The 'clean' implementation would involve searching the challenge
+            // in m_challenges_state, which is a bit of an overkill
+            unlockFeature(const_cast<ChallengeStatus*>(m_current_challenge),
+                          RaceManager::get()->getDifficulty());
+        }
+        else APClient::death_detected(APClient::LOOSE_CHALLENGE);
     }   // if isActive && challenge solved
     
     //This updates the number of points.

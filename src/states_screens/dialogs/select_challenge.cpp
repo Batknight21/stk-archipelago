@@ -359,6 +359,9 @@ GUIEngine::EventPropagation SelectChallengeDialog::processEvent(const std::strin
             // many if tests in other places (e.g. if network_game call
             // network_manager else call race_manager).
             // network_manager->initCharacterDataStructures();
+            if (!APClient::difficulty_unlocked(
+                static_cast<RaceManager::Difficulty>(static_cast<int>(UserConfigParams::m_difficulty)), m_challenge_id))
+
             switch (UserConfigParams::m_difficulty)
             {
                 case 0:

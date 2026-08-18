@@ -156,7 +156,7 @@ jobs:
         if: ${{ matrix.os == 'ubuntu-latest' }}
         working-directory: build
         run: |
-          make VERBOSE=1 -j1
+          make -j4
           cd ..
           mv COPYING tools
       - name: Upload binaries of MinGW

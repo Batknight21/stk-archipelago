@@ -61,6 +61,42 @@ namespace APClient
     //     {"gp4", 24},
     // };
 
+    static std::map<int, std::string> item_to_name = {
+        {1, "Cornfield Crossing"},
+        {2, "Snow Peak"},
+        {3, "Volcan Island"},
+        {4, "Hacienda"},
+        {5, "Ravenbridge Mansion"},
+        {6, "Antediluvian Abyss"},
+        {7, "Nessie's Pond"},
+        {8, "Oliver Math"},
+        {9, "Gran Paradiso Island"},
+        {10, "Candela City"},
+        {11, "Light House"},
+        {12, "Snow Mountain"},
+        {13, "Minigolf"},
+        {14, "Black Forest"},
+        {15, "Mines"},
+        {16, "Shifting Sands"},
+        {17, "Zen Garden"},
+        {18, "STK Enterprise"},
+        {19, "xr591"},
+        {20, "Cocoa Temple"},
+        {21, "Penguin Playground"},
+        {22, "Off the Beaten Track"},
+        {23, "To the Moon and back"},
+        {24, "At World's End"},
+        {25, "Fort Magma"},
+        {26, "Speed Boost"},
+        {27, "Nitro Canister"},
+        {28, "Random Powerup"},
+        {29, "Banana Trap"},
+        {30, "Nitro Ability"},
+        {31, "Skid Ability"},
+        {32, "Look Back Ability"},
+        {33, "Key"}
+    };
+
     static std::map<APTrack, std::string> track_to_id = {
         {CORNFIELD_CROSSING, "cornfield_crossing"},
         {SNOW_PEAK, "snowpeak"},
@@ -212,6 +248,10 @@ namespace APClient
     static bool nitro_ability = false;
     static bool drift_ability = false;
     static bool look_back_ability = false;
+    static bool recent_knockout = false;
+
+    static DeathLinkMode death_link_receive = KNOCKOUT;
+    static DeathLinkMode death_link_send = LOOSE_CHALLENGE;
 
     static RaceManager::Difficulty goal_difficulty;
     static GoalType goal_type;
@@ -319,6 +359,11 @@ namespace APClient
                 grant_item(static_cast<ItemType>(item));
             }
 
+            if (notify)
+            {
+                const std::string message = "Received: " + item_to_name[item];
+                MessageQueue::add(MessageQueue::MT_ARCHIPELAGO, message.data());
+            }
         });
 
         AP_SetLocationCheckedCallback([](const int location)
@@ -384,6 +429,46 @@ namespace APClient
                 look_back_ability = true;
             }
         });
+
+        AP_RegisterSlotDataIntCallback("death_link_send_mode", [](int send_mode)
+        {
+            death_link_send = static_cast<DeathLinkMode>(send_mode);
+        });
+
+        AP_RegisterSlotDataIntCallback("death_link_receive_mode", [](int receive_mode)
+        {
+            death_link_receive = static_cast<DeathLinkMode>(receive_mode);
+        });
+
+        AP_SetDeathLinkSupported(true);
+
+        AP_SetDeathLinkRecvCallback([](const std::string& source, const std::string& cause)
+        {
+            const std::string message = source + " died: " + cause;
+            MessageQueue::add(MessageQueue::MT_ARCHIPELAGO, message.data());
+            switch (death_link_receive)
+            {
+            case KNOCKOUT:
+                {
+                    if (RaceManager::get()->isLinearRaceMode())
+                    {
+                        recent_knockout = true;
+                        World::getWorld()->getPlayerKart(0)->eliminate();
+                    }
+                    break;
+                }
+            case LOOSE_CHALLENGE:
+                {
+                    if (RaceManager::get()->getMajorMode() == RaceManager::MAJOR_MODE_GRAND_PRIX)
+                        RaceManager::get()->addSkippedTrackInGP();
+                    World::getWorld()->getRaceGUI()->removeReferee();
+                    World::getWorld()->endRaceEarly();
+                    break;
+                }
+            }
+        });
+
+        AP_EnableQueueItemRecvMsgs(false);
 
         AP_Start();
     }
@@ -496,6 +581,20 @@ namespace APClient
     void unlocked(const ChallengeData* challenge)
     {
         AP_SendItem(id_to_track[challenge->getChallengeId()]);
+    }
+
+    void death_detected(const DeathLinkMode mode)
+    {
+        if (mode == KNOCKOUT && recent_knockout)
+        {
+            recent_knockout = false;
+            return;
+        }
+
+        if (mode == death_link_send || death_link_send == BOTH)
+        {
+            AP_DeathLinkSend();
+        }
     }
 
     void set_object_activity(const std::string& challengeId)
@@ -709,6 +808,14 @@ namespace APClient
         if (!keys_initialized) return false;
 
         return required_keys <= collected_keys;
+    }
+
+    RaceManager::Difficulty best_difficulty_unlocked(const std::string& challengeId)
+    {
+        int unlocked_count = unlocked_challenges[id_to_track[challengeId]];
+        unlocked_count--;
+        if (unlocked_count < 0) return RaceManager::DIFFICULTY_FIRST;
+        return static_cast<RaceManager::Difficulty>(unlocked_count);
     }
 
     int get_fort_magma_points()
