@@ -1,10 +1,16 @@
 # CMakeLists.txt for Irrlicht in STK
+message(STATUS "CMAKE_CURRENT_SOURCE_DIR: ${CMAKE_CURRENT_SOURCE_DIR}")
+message(STATUS "PNG_INCLUDE_DIRS: ${PNG_INCLUDE_DIRS}")
+message(STATUS "JPEG_INCLUDE_DIR: ${JPEG_INCLUDE_DIR}")
+message(STATUS "ZLIB_INCLUDE_DIR: ${ZLIB_INCLUDE_DIR}")
+
 if(NOT SERVER_ONLY)
     find_package(PNG REQUIRED)
     find_package(JPEG REQUIRED)
     find_package(ZLIB REQUIRED)
     include_directories("${CMAKE_CURRENT_SOURCE_DIR}/include/"
                         "${JPEG_INCLUDE_DIR}"
+                        "${PNG_INCLUDE_DIRS}"
                         "${ZLIB_INCLUDE_DIR}"
                         "${CMAKE_CURRENT_SOURCE_DIR}/../../src"
                         "${CMAKE_CURRENT_SOURCE_DIR}/../graphics_engine/include")
