@@ -147,14 +147,6 @@ jobs:
           mkdir -p build
           cd build
           cmake .. -DLLVM_ARCH=${{ matrix.arch }} -DLLVM_PREFIX=/llvm-mingw -DCMAKE_TOOLCHAIN_FILE=../cmake/Toolchain-llvm-mingw.cmake -DCHECK_ASSETS=OFF -DUSE_DIRECTX=ON -DBC7_ISPC=ON -DCMAKE_ISPC_COMPILER=/opt/ispc/bin/ispc
-      - name: Check LLVM runtime
-        if: ${{ matrix.os == 'ubuntu-latest' && matrix.arch == 'armv7' }}
-        run: |
-          echo "LLVM version:"
-          /llvm-mingw/bin/armv7-w64-mingw32-clang --version
-          echo
-          echo "Profile runtimes:"
-          find /llvm-mingw/lib/clang/12.0.0 -iname '*profile*' -print
       - name: Build for MSVC
         if: ${{ matrix.os == 'windows-2022' }}
         working-directory: build
@@ -164,7 +156,7 @@ jobs:
         if: ${{ matrix.os == 'ubuntu-latest' }}
         working-directory: build
         run: |
-          make -j4
+          make VERBOSE=1 -j1
           cd ..
           mv COPYING tools
       - name: Upload binaries of MinGW
