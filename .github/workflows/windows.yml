@@ -150,6 +150,17 @@ jobs:
           mkdir -p build
           cd build
           cmake .. -DLLVM_ARCH=${{ matrix.arch }} -DLLVM_PREFIX=/llvm-mingw -DCMAKE_TOOLCHAIN_FILE=../cmake/Toolchain-llvm-mingw.cmake -DCHECK_ASSETS=OFF -DUSE_DIRECTX=ON -DBC7_ISPC=ON -DCMAKE_ISPC_COMPILER=/opt/ispc/bin/ispc
+      - name: Inspect zlib
+        if: ${{ matrix.os == 'ubuntu-latest' && (matrix.arch == 'armv7' || matrix.arch == 'aarch64') }}
+        run: |
+          echo "=== zlib source ==="
+          grep -R "ZLIB_VERSION" -n build/_deps/zlib-* 2>/dev/null | head -20
+
+          echo "=== zlib CMake cache ==="
+          grep -E "BUILD_TEST|ZLIB.*TEST|TEST" build/_deps/zlib-build/CMakeCache.txt 2>/dev/null | head -50
+
+          echo "=== zlib test CMake ==="
+          ls -la build/_deps/zlib-build/test 2>/dev/null || true
       - name: Build for MSVC
         if: ${{ matrix.os == 'windows-2022' }}
         working-directory: build
