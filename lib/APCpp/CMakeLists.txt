@@ -57,6 +57,7 @@ endif (NOT MINGW)
 if (MINGW OR NOT ZLIB_FOUND)
     # Force static build for zlib if not in system, and alias static to shared for IXWebsocket
     set(ZLIB_BUILD_SHARED OFF)
+    set(ZLIB_BUILD_TESTING OFF)
     include(FetchContent)
     FetchContent_Declare(
         zlib
