@@ -148,7 +148,6 @@ jobs:
           cd build
           cmake .. -DLLVM_ARCH=${{ matrix.arch }} -DLLVM_PREFIX=/llvm-mingw -DCMAKE_TOOLCHAIN_FILE=../cmake/Toolchain-llvm-mingw.cmake -DCHECK_ASSETS=OFF -DUSE_DIRECTX=ON -DBC7_ISPC=ON -DCMAKE_ISPC_COMPILER=/opt/ispc/bin/ispc
       - name: Inspect mbedTLS configuration
-        if: ${{ matrix.os == 'ubuntu-latest' && (matrix.arch == 'armv7' || matrix.arch == 'aarch64') }}
         run: |
           echo "=== config files ==="
           find build/lib/APCpp/mbedtls-3.6.4 -name 'config.h' -o -name '*config*.h'
