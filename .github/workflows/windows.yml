@@ -147,6 +147,27 @@ jobs:
           mkdir -p build
           cd build
           cmake .. -DLLVM_ARCH=${{ matrix.arch }} -DLLVM_PREFIX=/llvm-mingw -DCMAKE_TOOLCHAIN_FILE=../cmake/Toolchain-llvm-mingw.cmake -DCHECK_ASSETS=OFF -DUSE_DIRECTX=ON -DBC7_ISPC=ON -DCMAKE_ISPC_COMPILER=/opt/ispc/bin/ispc
+      - name: Inspect mbedTLS configuration
+        if: ${{ matrix.os == 'ubuntu-latest' && (matrix.arch == 'armv7' || matrix.arch == 'aarch64') }}
+        run: |
+          echo "=== config files ==="
+          find build/lib/APCpp/mbedtls-3.6.4 -name 'config.h' -o -name '*config*.h'
+
+          echo "=== gcm_aes_setkey_wrap ==="
+          grep -R -n "gcm_aes_setkey_wrap" \
+            build/lib/APCpp/mbedtls-3.6.4
+
+          echo "=== ccm_aes_setkey_wrap ==="
+          grep -R -n "ccm_aes_setkey_wrap" \
+            build/lib/APCpp/mbedtls-3.6.4
+
+          echo "=== cipher_wrap.c ==="
+          sed -n '560,710p' \
+            build/lib/APCpp/mbedtls-3.6.4/library/cipher_wrap.c
+
+          echo "=== CMake cache ==="
+          grep -i "MBEDTLS" build/CMakeCache.txt || true
+          grep -i "MBEDTLS" build/lib/APCpp/mbedtls_bin/CMakeCache.txt || true
       - name: Build for MSVC
         if: ${{ matrix.os == 'windows-2022' }}
         working-directory: build
