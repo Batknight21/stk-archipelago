@@ -146,22 +146,7 @@ jobs:
         run: |
           mkdir -p build
           cd build
-          cmake .. -DLLVM_ARCH=${{ matrix.arch }} -DLLVM_PREFIX=/llvm-mingw -DCMAKE_TOOLCHAIN_FILE=../cmake/Toolchain-llvm-mingw.cmake -DCHECK_ASSETS=OFF -DUSE_DIRECTX=ON -DBC7_ISPC=ON -DCMAKE_ISPC_COMPILER=/opt/ispc/bin/ispc
-      - name: Trace zlib CMake
-        if: ${{ matrix.os == 'ubuntu-latest' && (matrix.arch == 'armv7' || matrix.arch == 'aarch64') }}
-        working-directory: build
-        run: |
-          echo "=== zlib directories ==="
-          find _deps -maxdepth 2 -type d | sort | grep zlib || true
-
-          echo "=== infcover references ==="
-          grep -Rni "infcover" _deps/zlib-build 2>/dev/null | head -100 || true
-
-          echo "=== zlib targets ==="
-          grep -Rni "infcover" . 2>/dev/null | head -100 || true
-
-          echo "=== zlib CMake files ==="
-          find _deps -maxdepth 3 -type f \( -name 'CMakeLists.txt' -o -name '*.cmake' \) | sort | grep zlib || true
+          cmake .. -DLLVM_ARCH=${{ matrix.arch }} -DLLVM_PREFIX=/llvm-mingw -DCMAKE_TOOLCHAIN_FILE=../cmake/Toolchain-llvm-mingw.cmake -DCHECK_ASSETS=OFF -DUSE_DIRECTX=ON -DBC7_ISPC=ON -DCMAKE_ISPC_COMPILER=/opt/ispc/bin/ispc -DZLIB_BUILD_TESTING=OFF
       - name: Build for MSVC
         if: ${{ matrix.os == 'windows-2022' }}
         working-directory: build
