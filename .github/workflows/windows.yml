@@ -58,22 +58,22 @@ jobs:
             id=$((${{ github.run_number }} - number))
             echo "cache_$number=windows-${{ github.ref }}-${{ matrix.arch }}-${{ matrix.os }}-$id" >> $GITHUB_ENV
           done
-#      - name: Handle build cache
-#        uses: actions/cache@v3
-#        with:
-#          path: |
-#            build
-#          key: windows-${{ github.ref }}-${{ matrix.arch }}-${{ matrix.os }}-${{ github.run_number }}
-#          restore-keys: |
-#            ${{ env.cache_1 }}
-#            ${{ env.cache_2 }}
-#            ${{ env.cache_3 }}
-#            ${{ env.cache_4 }}
-#            ${{ env.cache_5 }}
-#            ${{ env.cache_6 }}
-#            ${{ env.cache_7 }}
-#            ${{ env.cache_8 }}
-#            ${{ env.cache_9 }}
+      - name: Handle build cache
+        uses: actions/cache@v3
+        with:
+          path: |
+            build
+          key: windows-${{ github.ref }}-${{ matrix.arch }}-${{ matrix.os }}-${{ github.run_number }}
+          restore-keys: |
+            ${{ env.cache_1 }}
+            ${{ env.cache_2 }}
+            ${{ env.cache_3 }}
+            ${{ env.cache_4 }}
+            ${{ env.cache_5 }}
+            ${{ env.cache_6 }}
+            ${{ env.cache_7 }}
+            ${{ env.cache_8 }}
+            ${{ env.cache_9 }}
       - name: Download dependencies
         run: |
           ${{ env.wget }} https://github.com/supertuxkart/dependencies/releases/download/preview/dependencies-win-${{ matrix.arch }}.zip
@@ -129,9 +129,6 @@ jobs:
           echo "set(CMAKE_FIND_ROOT_PATH_MODE_INCLUDE ONLY)" >> toolchain.cmake
           echo 'set(ISPC_ARCH "x86-64")' >> toolchain.cmake
       # Manually specify CMAKE_SYSTEM_PROCESSOR, it can only be set together with -DDCMAKE_SYSTEM_NAME
-      - name: Clean build
-        if: ${{ matrix.os == 'ubuntu-latest' }}
-        run: rm -rf build
       - name: Configure bulid for MSVC
         if: ${{ matrix.os == 'windows-2022' }}
         run: |
@@ -150,17 +147,21 @@ jobs:
           mkdir -p build
           cd build
           cmake .. -DLLVM_ARCH=${{ matrix.arch }} -DLLVM_PREFIX=/llvm-mingw -DCMAKE_TOOLCHAIN_FILE=../cmake/Toolchain-llvm-mingw.cmake -DCHECK_ASSETS=OFF -DUSE_DIRECTX=ON -DBC7_ISPC=ON -DCMAKE_ISPC_COMPILER=/opt/ispc/bin/ispc
-      - name: Inspect zlib
+      - name: Trace zlib CMake
         if: ${{ matrix.os == 'ubuntu-latest' && (matrix.arch == 'armv7' || matrix.arch == 'aarch64') }}
+        working-directory: build
         run: |
-          echo "=== zlib source ==="
-          grep -R "ZLIB_VERSION" -n build/_deps/zlib-* 2>/dev/null | head -20
+          echo "=== zlib directories ==="
+          find _deps -maxdepth 2 -type d | sort | grep zlib || true
 
-          echo "=== zlib CMake cache ==="
-          grep -E "BUILD_TEST|ZLIB.*TEST|TEST" build/_deps/zlib-build/CMakeCache.txt 2>/dev/null | head -50
+          echo "=== infcover references ==="
+          grep -Rni "infcover" _deps/zlib-build 2>/dev/null | head -100 || true
 
-          echo "=== zlib test CMake ==="
-          ls -la build/_deps/zlib-build/test 2>/dev/null || true
+          echo "=== zlib targets ==="
+          grep -Rni "infcover" . 2>/dev/null | head -100 || true
+
+          echo "=== zlib CMake files ==="
+          find _deps -maxdepth 3 -type f \( -name 'CMakeLists.txt' -o -name '*.cmake' \) | sort | grep zlib || true
       - name: Build for MSVC
         if: ${{ matrix.os == 'windows-2022' }}
         working-directory: build
