@@ -147,31 +147,6 @@ jobs:
           mkdir -p build
           cd build
           cmake .. -DLLVM_ARCH=${{ matrix.arch }} -DLLVM_PREFIX=/llvm-mingw -DCMAKE_TOOLCHAIN_FILE=../cmake/Toolchain-llvm-mingw.cmake -DCHECK_ASSETS=OFF -DUSE_DIRECTX=ON -DBC7_ISPC=ON -DCMAKE_ISPC_COMPILER=/opt/ispc/bin/ispc
-      - name: Inspect mbedTLS configuration
-        shell: bash
-        run: |
-          echo "=== relevant macro definitions ==="
-  
-          grep -R \
-          -n \
-          -E \
-          'CCM_GCM_CAN_AES|CIPHER_HAVE_GCM_AES|CIPHER_HAVE_CCM_AES' \
-          build/lib/APCpp/mbedtls-3.6.4/include \
-          build/lib/APCpp/mbedtls-3.6.4/library \
-          --include='*.h' \
-          --include='*.c'
-          echo "=== generated mbedtls_config.h ==="
-
-          grep -n \
-            -E \
-            'MBEDTLS_(AES_C|GCM_C|CCM_C|CIPHER_C|PSA_CRYPTO_C|USE_PSA_CRYPTO)' \
-            build/lib/APCpp/mbedtls-3.6.4/include/mbedtls/mbedtls_config.h
-          echo "=== generated crypto_config.h ==="
-
-          grep -n \
-            -E \
-            'PSA_WANT_(KEY_TYPE_AES|ALG_GCM|ALG_CCM)' \
-            build/lib/APCpp/mbedtls-3.6.4/include/psa/crypto_config.h
       - name: Build for MSVC
         if: ${{ matrix.os == 'windows-2022' }}
         working-directory: build
