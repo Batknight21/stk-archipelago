@@ -3,10 +3,6 @@ cmake_minimum_required(VERSION 3.24)
 project(APCpp)
 #set(CMAKE_CXX_STANDARD 17)
 #set(CMAKE_CXX_STANDARD_REQUIRED ON)
-set_target_properties(APCpp PROPERTIES
-        CXX_STANDARD 17
-        CXX_STANDARD_REQUIRED ON
-)
 
 set(CMAKE_WINDOWS_EXPORT_ALL_SYMBOLS ON)
 set(CMAKE_POSITION_INDEPENDENT_CODE ON)
@@ -16,7 +12,11 @@ add_library(APCpp SHARED Archipelago.cpp Archipelago_DataStorageSim.cpp Archipel
 # Allows users to use APCpp as a dependency
 target_include_directories(APCpp PUBLIC ${CMAKE_CURRENT_SOURCE_DIR})
 
-set_target_properties(APCpp PROPERTIES PUBLIC_HEADER Archipelago.h)
+set_target_properties(APCpp PROPERTIES
+        PUBLIC_HEADER Archipelago.h
+        CXX_STANDARD 17
+        CXX_STANDARD_REQUIRED ON
+)
 
 set(BUILD_SHARED_LIBS OFF CACHE BOOL "" FORCE)
 set(ENABLE_TESTING OFF CACHE BOOL "" FORCE)
