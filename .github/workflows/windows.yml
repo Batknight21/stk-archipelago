@@ -147,14 +147,11 @@ jobs:
           mkdir -p build
           cd build
           cmake .. -DLLVM_ARCH=${{ matrix.arch }} -DLLVM_PREFIX=/llvm-mingw -DCMAKE_TOOLCHAIN_FILE=../cmake/Toolchain-llvm-mingw.cmake -DCHECK_ASSETS=OFF -DUSE_DIRECTX=ON -DBC7_ISPC=ON -DCMAKE_ISPC_COMPILER=/opt/ispc/bin/ispc
-      - name: Inspect mbedTLS
+      - name: Inspect mbedTLS configuration
         shell: bash
         run: |
-          echo "=== mbedTLS directory ==="
-          find build/lib/APCpp/mbedtls-3.6.4 -maxdepth 2 -type f | head -100
-
-          echo "=== config files ==="
-          find build/lib/APCpp/mbedtls-3.6.4 -type f -name '*config*.h' -print
+          echo "=== config headers ==="
+          find build/lib/APCpp/mbedtls-3.6.4 -type f -name '*config*.h' -print || true
 
           echo "=== gcm_aes_setkey_wrap ==="
           grep -R "gcm_aes_setkey_wrap" build/lib/APCpp/mbedtls-3.6.4 \
@@ -164,8 +161,11 @@ jobs:
           grep -R "ccm_aes_setkey_wrap" build/lib/APCpp/mbedtls-3.6.4 \
             --include='*.c' --include='*.h' || true
 
-          echo "=== generated mbedTLS config ==="
-          find build -type f \( -name 'mbedtls_config.h' -o -name 'config.h' \) -print
+          echo "=== generated config ==="
+          find build -type f \( -name 'mbedtls_config.h' -o -name 'config.h' \) -print || true
+
+          echo "=== mbedcrypto flags ==="
+          cat build/lib/APCpp/mbedtls_bin/library/CMakeFiles/mbedcrypto.dir/flags.make || true
       - name: Build for MSVC
         if: ${{ matrix.os == 'windows-2022' }}
         working-directory: build
