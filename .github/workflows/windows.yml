@@ -149,22 +149,15 @@ jobs:
           cmake .. -DLLVM_ARCH=${{ matrix.arch }} -DLLVM_PREFIX=/llvm-mingw -DCMAKE_TOOLCHAIN_FILE=../cmake/Toolchain-llvm-mingw.cmake -DCHECK_ASSETS=OFF -DUSE_DIRECTX=ON -DBC7_ISPC=ON -DCMAKE_ISPC_COMPILER=/opt/ispc/bin/ispc
       - name: Debug APCpp compiler
         run: |
-          echo "=== CMake CXX compiler ==="
-          grep '^CMAKE_CXX_COMPILER:' build/CMakeCache.txt
+          echo "=== CMakeCache files ==="
+          find . -name CMakeCache.txt -print
 
-          echo "=== CMake C compiler ==="
-          grep '^CMAKE_C_COMPILER:' build/CMakeCache.txt
+          echo "=== APCpp build.make files ==="
+          find . -path '*APCpp/CMakeFiles/APCpp.dir/build.make' -print
 
-          echo "=== CXX compiler in APCpp build.make ==="
-          grep -m1 -E 'c\+\+|g\+\+|clang\+\+|w64-mingw' \
-            build/lib/APCpp/CMakeFiles/APCpp.dir/build.make || true
-
-          echo "=== Archipelago compile command ==="
-          grep -A5 -B2 'Archipelago.cpp.obj' \
-            build/lib/APCpp/CMakeFiles/APCpp.dir/build.make || true
-          echo "=== CMake flags ==="
-          grep '^CMAKE_CXX_FLAGS:' build/CMakeCache.txt || true
-          grep '^CMAKE_CXX_STANDARD:' build/CMakeCache.txt || true
+          echo "=== Archipelago compile commands ==="
+          find . -name build.make -path '*APCpp*' -exec \
+            grep -H -A5 -B2 'Archipelago.cpp.obj' {} \; || true
       - name: Build for MSVC
         if: ${{ matrix.os == 'windows-2022' }}
         working-directory: build
