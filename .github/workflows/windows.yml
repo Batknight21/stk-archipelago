@@ -147,6 +147,21 @@ jobs:
           mkdir -p build
           cd build
           cmake .. -DLLVM_ARCH=${{ matrix.arch }} -DLLVM_PREFIX=/llvm-mingw -DCMAKE_TOOLCHAIN_FILE=../cmake/Toolchain-llvm-mingw.cmake -DCHECK_ASSETS=OFF -DUSE_DIRECTX=ON -DBC7_ISPC=ON -DCMAKE_ISPC_COMPILER=/opt/ispc/bin/ispc
+      - name: Verify CMake toolchain
+        shell: bash
+        run: |
+          echo "=== CMAKE C/CXX ==="
+          grep -E '^CMAKE_(C|CXX)_COMPILER(:|=)' build/CMakeCache.txt || true
+
+          echo "=== PROCESSOR ==="
+          grep -E '^CMAKE_SYSTEM_(NAME|PROCESSOR):' build/CMakeCache.txt || true
+
+          echo "=== APCpp compiler ==="
+          grep -A2 -B2 'compile CXX' \
+            build/lib/APCpp/CMakeFiles/APCpp.dir/flags.make || true
+
+          echo "=== APCpp includes ==="
+          cat build/lib/APCpp/CMakeFiles/APCpp.dir/includes_CXX.rsp
       - name: Clean CMake build directory
         shell: bash
         run: |
