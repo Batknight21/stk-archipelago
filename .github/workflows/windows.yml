@@ -147,21 +147,24 @@ jobs:
           mkdir -p build
           cd build
           cmake .. -DLLVM_ARCH=${{ matrix.arch }} -DLLVM_PREFIX=/llvm-mingw -DCMAKE_TOOLCHAIN_FILE=../cmake/Toolchain-llvm-mingw.cmake -DCHECK_ASSETS=OFF -DUSE_DIRECTX=ON -DBC7_ISPC=ON -DCMAKE_ISPC_COMPILER=/opt/ispc/bin/ispc
-      - name: Verify CMake toolchain
+      - name: Test APCpp compiler
         shell: bash
         run: |
-          echo "=== CMAKE C/CXX ==="
-          grep -E '^CMAKE_(C|CXX)_COMPILER(:|=)' build/CMakeCache.txt || true
+          cd build/lib/APCpp
 
-          echo "=== PROCESSOR ==="
-          grep -E '^CMAKE_SYSTEM_(NAME|PROCESSOR):' build/CMakeCache.txt || true
+          echo "=== compiler ==="
+          /llvm-mingw/bin/aarch64-w64-mingw32-clang++ --version
 
-          echo "=== APCpp compiler ==="
-          grep -A2 -B2 'compile CXX' \
-            build/lib/APCpp/CMakeFiles/APCpp.dir/flags.make || true
+          echo "=== test compilation ==="
+          echo 'int main() { return 0; }' > /tmp/test.cpp
 
-          echo "=== APCpp includes ==="
-          cat build/lib/APCpp/CMakeFiles/APCpp.dir/includes_CXX.rsp
+          /llvm-mingw/bin/aarch64-w64-mingw32-clang++ \
+            -std=gnu++17 \
+            /tmp/test.cpp \
+            -o /tmp/test.exe
+
+          echo "=== result ==="
+          file /tmp/test.exe
       - name: Clean CMake build directory
         shell: bash
         run: |
