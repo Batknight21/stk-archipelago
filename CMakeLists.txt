@@ -214,10 +214,6 @@ endif()
 add_subdirectory("${PROJECT_SOURCE_DIR}/lib/bullet")
 include_directories(BEFORE "${PROJECT_SOURCE_DIR}/lib/bullet/src")
 
-# Build the Archipelago library
-add_subdirectory("${PROJECT_SOURCE_DIR}/lib/APCpp")
-include_directories(BEFORE "${PROJECT_SOURCE_DIR}/lib/APCpp")
-
 # Build the DNS C library
 if(USE_DNS_C)
     add_definitions(-DDNS_C)
@@ -697,6 +693,10 @@ if (NOT USE_APPLE_NETWORK_LIBRARIES)
         add_definitions(-DENABLE_CRYPTO_MBEDTLS)
     endif()
 endif()
+
+# Build the Archipelago library
+add_subdirectory("${PROJECT_SOURCE_DIR}/lib/APCpp")
+include_directories(BEFORE "${PROJECT_SOURCE_DIR}/lib/APCpp")
 
 # Common library dependencies
 target_link_libraries(supertuxkart

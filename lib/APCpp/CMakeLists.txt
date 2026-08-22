@@ -29,21 +29,55 @@ if (NOT MINGW)
     endif(NOT OPENSSL_FOUND)
 endif (NOT MINGW)
 
+#if ((WIN32 AND USE_TLS) OR USE_MBED_TLS)
+#    set(APCPP_MBEDTLS_VER 3.6.4)
+#    execute_process(COMMAND ${CMAKE_COMMAND} -E remove -f mbedtls-${APCPP_MBEDTLS_VER})
+#    execute_process(
+#      COMMAND ${CMAKE_COMMAND} -E tar xzf ${CMAKE_CURRENT_SOURCE_DIR}/mbedtls-${APCPP_MBEDTLS_VER}.tar.bz2
+#      WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}
+#    )
+#    set(USE_STATIC_MBEDTLS_LIBRARY ON CACHE BOOL "" FORCE)
+#    set(MBEDTLS_INCLUDE_DIRS ${CMAKE_BINARY_DIR}/mbedtls-${APCPP_MBEDTLS_VER}/include)
+#    set(MBEDTLS_VERSION_GREATER_THAN_3 ${MBEDTLS_INCLUDE_DIRS})
+#    set(MBEDTLS_LIBRARY mbedtls)
+#    set(MBEDX509_LIBRARY mbedx509)
+#    set(MBEDCRYPTO_LIBRARY mbedcrypto)
+#    add_subdirectory(${CMAKE_CURRENT_BINARY_DIR}/mbedtls-${APCPP_MBEDTLS_VER} mbedtls_bin)
+#endif ((WIN32 AND USE_TLS) OR USE_MBED_TLS)
+
+# Use the MbedTLS instance already configured by STK if available.
 if ((WIN32 AND USE_TLS) OR USE_MBED_TLS)
-    set(APCPP_MBEDTLS_VER 3.6.4)
-    execute_process(COMMAND ${CMAKE_COMMAND} -E remove -f mbedtls-${APCPP_MBEDTLS_VER})
-    execute_process(
-      COMMAND ${CMAKE_COMMAND} -E tar xzf ${CMAKE_CURRENT_SOURCE_DIR}/mbedtls-${APCPP_MBEDTLS_VER}.tar.bz2
-      WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}
-    )
-    set(USE_STATIC_MBEDTLS_LIBRARY ON CACHE BOOL "" FORCE)
-    set(MBEDTLS_INCLUDE_DIRS ${CMAKE_BINARY_DIR}/mbedtls-${APCPP_MBEDTLS_VER}/include)
-    set(MBEDTLS_VERSION_GREATER_THAN_3 ${MBEDTLS_INCLUDE_DIRS})
-    set(MBEDTLS_LIBRARY mbedtls)
-    set(MBEDX509_LIBRARY mbedx509)
-    set(MBEDCRYPTO_LIBRARY mbedcrypto)
-    add_subdirectory(${CMAKE_CURRENT_BINARY_DIR}/mbedtls-${APCPP_MBEDTLS_VER} mbedtls_bin)
-endif ((WIN32 AND USE_TLS) OR USE_MBED_TLS)
+    if (MBEDTLS_INCLUDE_DIRS AND MBEDCRYPTO_LIBRARY)
+        message(STATUS "APCpp: Using STK's MbedTLS")
+    else()
+        message(STATUS "APCpp: Building bundled MbedTLS ${APCPP_MBEDTLS_VER}")
+
+        set(APCPP_MBEDTLS_VER 3.6.4)
+
+        execute_process(
+                COMMAND ${CMAKE_COMMAND} -E remove -f
+                mbedtls-${APCPP_MBEDTLS_VER}
+        )
+
+        execute_process(
+                COMMAND ${CMAKE_COMMAND} -E tar xzf
+                ${CMAKE_CURRENT_SOURCE_DIR}/mbedtls-${APCPP_MBEDTLS_VER}.tar.bz2
+                WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}
+        )
+
+        set(USE_STATIC_MBEDTLS_LIBRARY ON CACHE BOOL "" FORCE)
+        set(MBEDTLS_INCLUDE_DIRS
+                ${CMAKE_CURRENT_BINARY_DIR}/mbedtls-${APCPP_MBEDTLS_VER}/include)
+        set(MBEDTLS_LIBRARY mbedtls)
+        set(MBEDX509_LIBRARY mbedx509)
+        set(MBEDCRYPTO_LIBRARY mbedcrypto)
+
+        add_subdirectory(
+                ${CMAKE_CURRENT_BINARY_DIR}/mbedtls-${APCPP_MBEDTLS_VER}
+                mbedtls_bin
+        )
+    endif()
+endif()
 
 # Attempt finding system version of zlib
 if (NOT MINGW)
