@@ -150,25 +150,22 @@ jobs:
       - name: Inspect mbedTLS configuration
         shell: bash
         run: |
-          echo "=== cipher_wrap.c around gcm definition ==="
-          sed -n '560,620p' build/lib/APCpp/mbedtls-3.6.4/library/cipher_wrap.c
+          echo "=== relevant macro definitions ==="
   
-          echo "=== cipher_wrap.c around gcm usage ==="
-          sed -n '580,710p' build/lib/APCpp/mbedtls-3.6.4/library/cipher_wrap.c
-  
-          echo "=== mbedcrypto include paths ==="
-          cat build/lib/APCpp/mbedtls_bin/library/CMakeFiles/mbedcrypto.dir/includes_C.rsp
-  
-          echo "=== mbedcrypto flags ==="
-          cat build/lib/APCpp/mbedtls_bin/library/CMakeFiles/mbedcrypto.dir/flags.make
-          echo "=== compiler configuration ==="
+          grep -R \
+          -n \
+          -E \
+          'CCM_GCM_CAN_AES|CIPHER_HAVE_GCM_AES|CIPHER_HAVE_CCM_AES' \
+          build/lib/APCpp/mbedtls-3.6.4/include \
+          build/lib/APCpp/mbedtls-3.6.4/library \
+          --include='*.h' \
+          --include='*.c'
+          echo "=== generated mbedtls_config.h ==="
 
-          echo '#include "mbedtls/mbedtls_config.h"' |
-            /llvm-mingw/bin/armv7-w64-mingw32-clang \
-              -E -dM \
-              -Ibuild/lib/APCpp/mbedtls-3.6.4/include \
-              -x c - |
-            grep -E 'MBEDTLS_(AES_C|GCM_C|CCM_C|CIPHER_C|USE_PSA_CRYPTO)'
+          grep -n \
+            -E \
+            'MBEDTLS_(AES_C|GCM_C|CCM_C|CIPHER_C|PSA_CRYPTO_C|USE_PSA_CRYPTO)' \
+            build/lib/APCpp/mbedtls-3.6.4/include/mbedtls/mbedtls_config.h
       - name: Build for MSVC
         if: ${{ matrix.os == 'windows-2022' }}
         working-directory: build
