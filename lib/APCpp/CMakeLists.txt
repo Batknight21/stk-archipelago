@@ -69,6 +69,25 @@ if (MINGW OR NOT ZLIB_FOUND)
 endif (MINGW OR NOT ZLIB_FOUND)
 
 set(IXWEBSOCKET_INSTALL OFF CACHE BOOL "" FORCE)
+message(STATUS "=== mbedTLS configuration macros ===")
+file(READ
+        "${CMAKE_CURRENT_BINARY_DIR}/mbedtls-${APCPP_MBEDTLS_VER}/include/mbedtls/mbedtls_config.h"
+        MBEDTLS_CONFIG_CONTENT
+)
+
+foreach(MACRO
+        MBEDTLS_AES_C
+        MBEDTLS_GCM_C
+        MBEDTLS_CCM_C
+        MBEDTLS_CIPHER_C
+        MBEDTLS_USE_PSA_CRYPTO
+)
+    string(FIND "${MBEDTLS_CONFIG_CONTENT}"
+            "#define ${MACRO}"
+            MACRO_POS
+    )
+    message(STATUS "${MACRO}: ${MACRO_POS}")
+endforeach()
 add_subdirectory(IXWebSocket)
 include_directories(IXWebSocket)
 target_link_libraries(APCpp ixwebsocket)
