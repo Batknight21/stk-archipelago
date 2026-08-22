@@ -150,22 +150,17 @@ jobs:
       - name: Inspect mbedTLS configuration
         shell: bash
         run: |
-          echo "=== config headers ==="
-          find build/lib/APCpp/mbedtls-3.6.4 -type f -name '*config*.h' -print || true
-
-          echo "=== gcm_aes_setkey_wrap ==="
-          grep -R "gcm_aes_setkey_wrap" build/lib/APCpp/mbedtls-3.6.4 \
-            --include='*.c' --include='*.h' || true
-
-          echo "=== ccm_aes_setkey_wrap ==="
-          grep -R "ccm_aes_setkey_wrap" build/lib/APCpp/mbedtls-3.6.4 \
-            --include='*.c' --include='*.h' || true
-
-          echo "=== generated config ==="
-          find build -type f \( -name 'mbedtls_config.h' -o -name 'config.h' \) -print || true
-
+          echo "=== cipher_wrap.c around gcm definition ==="
+          sed -n '560,620p' build/lib/APCpp/mbedtls-3.6.4/library/cipher_wrap.c
+  
+          echo "=== cipher_wrap.c around gcm usage ==="
+          sed -n '580,710p' build/lib/APCpp/mbedtls-3.6.4/library/cipher_wrap.c
+  
+          echo "=== mbedcrypto include paths ==="
+          cat build/lib/APCpp/mbedtls_bin/library/CMakeFiles/mbedcrypto.dir/includes_C.rsp
+  
           echo "=== mbedcrypto flags ==="
-          cat build/lib/APCpp/mbedtls_bin/library/CMakeFiles/mbedcrypto.dir/flags.make || true
+          cat build/lib/APCpp/mbedtls_bin/library/CMakeFiles/mbedcrypto.dir/flags.make
       - name: Build for MSVC
         if: ${{ matrix.os == 'windows-2022' }}
         working-directory: build
