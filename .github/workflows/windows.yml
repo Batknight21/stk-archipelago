@@ -147,28 +147,6 @@ jobs:
           mkdir -p build
           cd build
           cmake .. -DLLVM_ARCH=${{ matrix.arch }} -DLLVM_PREFIX=/llvm-mingw -DCMAKE_TOOLCHAIN_FILE=../cmake/Toolchain-llvm-mingw.cmake -DCHECK_ASSETS=OFF -DUSE_DIRECTX=ON -DBC7_ISPC=ON -DCMAKE_ISPC_COMPILER=/opt/ispc/bin/ispc
-      - name: Test APCpp compiler
-        shell: bash
-        run: |
-          cd build/lib/APCpp
-
-          echo "=== compiler ==="
-          /llvm-mingw/bin/aarch64-w64-mingw32-clang++ --version
-
-          echo "=== test compilation ==="
-          echo 'int main() { return 0; }' > /tmp/test.cpp
-
-          /llvm-mingw/bin/aarch64-w64-mingw32-clang++ \
-            -std=gnu++17 \
-            /tmp/test.cpp \
-            -o /tmp/test.exe
-
-          echo "=== result ==="
-          file /tmp/test.exe
-      - name: Clean CMake build directory
-        shell: bash
-        run: |
-          rm -rf build
       - name: Debug llvm-mingw compiler
         shell: bash
         run: |
