@@ -147,21 +147,30 @@ jobs:
           mkdir -p build
           cd build
           cmake .. -DLLVM_ARCH=${{ matrix.arch }} -DLLVM_PREFIX=/llvm-mingw -DCMAKE_TOOLCHAIN_FILE=../cmake/Toolchain-llvm-mingw.cmake -DCHECK_ASSETS=OFF -DUSE_DIRECTX=ON -DBC7_ISPC=ON -DCMAKE_ISPC_COMPILER=/opt/ispc/bin/ispc
-      - name: Debug APCpp CXX flags
+      - name: Clean CMake build directory
         shell: bash
         run: |
-          echo "=== flags.make ==="
-          cat build/lib/APCpp/CMakeFiles/APCpp.dir/flags.make
+          rm -rf build
+      - name: Debug toolchain
+        shell: bash
+        run: |
+          echo "=== PATH ==="
+          echo "$PATH"
 
-          echo "=== includes_CXX.rsp ==="
-          cat build/lib/APCpp/CMakeFiles/APCpp.dir/includes_CXX.rsp
+          echo "=== llvm-mingw ==="
+          ls -la /llvm-mingw/bin/ | head -50 || true
 
-          echo "=== CXX compiler ==="
-          /llvm-mingw/bin/aarch64-w64-mingw32-clang++ --version
+          echo "=== target compilers ==="
+          command -v aarch64-w64-mingw32-clang++ || true
+          command -v armv7-w64-mingw32-clang++ || true
+          command -v aarch64-w64-mingw32-g++ || true
 
-          echo "=== filesystem test ==="
-          echo '#include <filesystem>' | \
-            /llvm-mingw/bin/aarch64-w64-mingw32-clang++ -x c++ -std=c++17 -E - >/dev/null
+          echo "=== MXE ==="
+          ls -l /data/mxe/usr/bin/*mingw*g++ 2>/dev/null | head -20 || true
+
+          echo "=== CXX environment ==="
+          echo "CC=$CC"
+          echo "CXX=$CXX"
       - name: Build for MSVC
         if: ${{ matrix.os == 'windows-2022' }}
         working-directory: build
