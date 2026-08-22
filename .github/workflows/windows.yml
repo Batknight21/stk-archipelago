@@ -151,26 +151,26 @@ jobs:
         shell: bash
         run: |
           rm -rf build
-      - name: Debug toolchain
+      - name: Debug llvm-mingw compiler
         shell: bash
         run: |
-          echo "=== PATH ==="
-          echo "$PATH"
+          echo "=== compiler symlink ==="
+          ls -l /llvm-mingw/bin/aarch64-w64-mingw32-clang++
+          readlink -f /llvm-mingw/bin/aarch64-w64-mingw32-clang++
 
-          echo "=== llvm-mingw ==="
-          ls -la /llvm-mingw/bin/ | head -50 || true
+          echo "=== wrapper ==="
+          ls -l /llvm-mingw/bin/clang-target-wrapper.sh
+          head -5 /llvm-mingw/bin/clang-target-wrapper.sh
 
-          echo "=== target compilers ==="
-          command -v aarch64-w64-mingw32-clang++ || true
-          command -v armv7-w64-mingw32-clang++ || true
-          command -v aarch64-w64-mingw32-g++ || true
+          echo "=== wrapper interpreter ==="
+          file /llvm-mingw/bin/clang-target-wrapper.sh
 
-          echo "=== MXE ==="
-          ls -l /data/mxe/usr/bin/*mingw*g++ 2>/dev/null | head -20 || true
+          echo "=== clang ==="
+          ls -l /llvm-mingw/bin/clang
+          /llvm-mingw/bin/clang --version
 
-          echo "=== CXX environment ==="
-          echo "CC=$CC"
-          echo "CXX=$CXX"
+          echo "=== target compiler directly ==="
+          /llvm-mingw/bin/aarch64-w64-mingw32-clang++ --version
       - name: Build for MSVC
         if: ${{ matrix.os == 'windows-2022' }}
         working-directory: build
