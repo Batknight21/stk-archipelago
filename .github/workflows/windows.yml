@@ -166,6 +166,12 @@ jobs:
             -E \
             'MBEDTLS_(AES_C|GCM_C|CCM_C|CIPHER_C|PSA_CRYPTO_C|USE_PSA_CRYPTO)' \
             build/lib/APCpp/mbedtls-3.6.4/include/mbedtls/mbedtls_config.h
+          echo "=== generated crypto_config.h ==="
+
+          grep -n \
+            -E \
+            'PSA_WANT_(KEY_TYPE_AES|ALG_GCM|ALG_CCM)' \
+            build/lib/APCpp/mbedtls-3.6.4/include/psa/crypto_config.h
       - name: Build for MSVC
         if: ${{ matrix.os == 'windows-2022' }}
         working-directory: build
