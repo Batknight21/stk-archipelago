@@ -147,17 +147,24 @@ jobs:
           mkdir -p build
           cd build
           cmake .. -DLLVM_ARCH=${{ matrix.arch }} -DLLVM_PREFIX=/llvm-mingw -DCMAKE_TOOLCHAIN_FILE=../cmake/Toolchain-llvm-mingw.cmake -DCHECK_ASSETS=OFF -DUSE_DIRECTX=ON -DBC7_ISPC=ON -DCMAKE_ISPC_COMPILER=/opt/ispc/bin/ispc
-      - name: Debug ASTC version
-        if: ${{ matrix.os == 'ubuntu-latest' && (matrix.arch == 'armv7' || matrix.arch == 'aarch64') }}
+      - name: Debug ASTC dependency
         shell: bash
         run: |
-          echo "=== grep -n -i -E 'version|ASTCENC.*VERSION' dependencies-win-aarch64/include/astcenc.h ==="
-          grep -n -i -E 'version|ASTCENC.*VERSION' dependencies-win-aarch64/include/astcenc.h
-          echo "grep -n -E 'ASTCENC_API|ASTCENC_VERSION|ASTCENC_VERSION_STRING' \dependencies-win-aarch64/include/astcenc.h"
-          grep -n -E 'ASTCENC_API|ASTCENC_VERSION|ASTCENC_VERSION_STRING' \
-              dependencies-win-aarch64/include/astcenc.h
-          echo "=== grep -Rni "astcenc_context_alloc" . ==="
-          grep -Rni "astcenc_context_alloc" .
+          echo "=== ASTC files ==="
+          find . -iname 'astcenc.h' -o -iname '*astcenc*' | sort
+
+          echo "=== ASTC header containing context_alloc ==="
+          grep -R -n -B3 -A8 "astcenc_context_alloc" \
+            dependencies-win-* \
+            lib \
+            2>/dev/null || true
+
+          echo "=== dependency directory ==="
+          ls -la dependencies-win-aarch64/include 2>/dev/null || true
+          ls -la dependencies-win-aarch64/lib 2>/dev/null || true
+
+          echo "=== compiler include path for graphics_engine ==="
+          cat build/lib/graphics_engine/CMakeFiles/graphics_engine.dir/includes_CXX.rsp 2>/dev/null || true
       - name: Build for MSVC
         if: ${{ matrix.os == 'windows-2022' }}
         working-directory: build
