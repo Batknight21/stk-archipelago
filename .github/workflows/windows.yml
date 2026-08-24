@@ -151,18 +151,13 @@ jobs:
         if: ${{ matrix.os == 'ubuntu-latest' && (matrix.arch == 'armv7' || matrix.arch == 'aarch64') }}
         shell: bash
         run: |
-          echo "=== ASTC header ==="
-          grep -n -E 'ASTCENC|VERSION|astcenc_context_alloc' \
-            dependencies-win-${{ matrix.arch }}/include/astcenc.h | head -40
-
-          echo "=== context_alloc declaration ==="
-          grep -n -A15 -B5 'astcenc_context_alloc' \
-            dependencies-win-${{ matrix.arch }}/include/astcenc.h | head -30
-      - name: Debug ASTC library
-        if: ${{ matrix.os == 'ubuntu-latest' && (matrix.arch == 'armv7' || matrix.arch == 'aarch64') }}
-        shell: bash
-        run: |
-          find dependencies-win-${{ matrix.arch }} -iname '*astc*' -print
+          echo "=== grep -n -i -E 'version|ASTCENC.*VERSION' dependencies-win-aarch64/include/astcenc.h ==="
+          grep -n -i -E 'version|ASTCENC.*VERSION' dependencies-win-aarch64/include/astcenc.h
+          echo "grep -n -E 'ASTCENC_API|ASTCENC_VERSION|ASTCENC_VERSION_STRING' \dependencies-win-aarch64/include/astcenc.h"
+          grep -n -E 'ASTCENC_API|ASTCENC_VERSION|ASTCENC_VERSION_STRING' \
+              dependencies-win-aarch64/include/astcenc.h
+          echo "=== grep -Rni "astcenc_context_alloc" . ==="
+          grep -Rni "astcenc_context_alloc" .
       - name: Build for MSVC
         if: ${{ matrix.os == 'windows-2022' }}
         working-directory: build
