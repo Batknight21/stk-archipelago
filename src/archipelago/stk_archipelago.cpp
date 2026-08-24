@@ -14,6 +14,7 @@
 #include "guiengine/message_queue.hpp"
 #include "items/powerup.hpp"
 #include "karts/abstract_kart.hpp"
+#include "karts/explosion_animation.hpp"
 #include "modes/world.hpp"
 #include "scriptengine/script_engine.hpp"
 #include "tracks/track.hpp"
@@ -453,7 +454,8 @@ namespace APClient
                     if (RaceManager::get()->isLinearRaceMode())
                     {
                         recent_knockout = true;
-                        World::getWorld()->getPlayerKart(0)->eliminate();
+                        AbstractKart* kart = World::getWorld()->getPlayerKart(0);
+                        ExplosionAnimation::create(kart, kart->getXYZ(), true);
                     }
                     break;
                 }

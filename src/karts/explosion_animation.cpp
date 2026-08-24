@@ -1,6 +1,7 @@
 //
 //  SuperTuxKart - a fun racing game with go-kart
 //  Copyright (C) 2012-2015 Joerg Henrichs
+//  Modified by Batknight21 2026
 //
 //  This program is free software; you can redistribute it and/or
 //  modify it under the terms of the GNU General Public License
@@ -34,6 +35,8 @@
 
 #include <cstring>
 
+#include "archipelago/stk_archipelago.hpp"
+
 /** A static create function that does only create an explosion if
  *  the explosion happens to be close enough to affect the kart.
  *  Otherwise, NULL is returned.
@@ -45,6 +48,7 @@ ExplosionAnimation *ExplosionAnimation::create(AbstractKart *kart,
                                                const Vec3 &pos,
                                                bool direct_hit)
 {
+    APClient::death_detected(APClient::KNOCKOUT);
     // When goal phase is happening karts is made stationary, so no animation
     // will be created
     if (kart->isInvulnerable() || World::getWorld()->isGoalPhase())
