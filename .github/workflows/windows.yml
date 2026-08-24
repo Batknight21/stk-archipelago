@@ -147,6 +147,22 @@ jobs:
           mkdir -p build
           cd build
           cmake .. -DLLVM_ARCH=${{ matrix.arch }} -DLLVM_PREFIX=/llvm-mingw -DCMAKE_TOOLCHAIN_FILE=../cmake/Toolchain-llvm-mingw.cmake -DCHECK_ASSETS=OFF -DUSE_DIRECTX=ON -DBC7_ISPC=ON -DCMAKE_ISPC_COMPILER=/opt/ispc/bin/ispc
+      - name: Debug ASTC version
+        if: ${{ matrix.os == 'ubuntu-latest' && (matrix.arch == 'armv7' || matrix.arch == 'aarch64') }}
+        shell: bash
+        run: |
+          echo "=== ASTC header ==="
+          grep -n -E 'ASTCENC|VERSION|astcenc_context_alloc' \
+            dependencies-win-${{ matrix.arch }}/include/astcenc.h | head -40
+
+          echo "=== context_alloc declaration ==="
+          grep -n -A15 -B5 'astcenc_context_alloc' \
+            dependencies-win-${{ matrix.arch }}/include/astcenc.h | head -30
+      - name: Debug ASTC library
+        if: ${{ matrix.os == 'ubuntu-latest' && (matrix.arch == 'armv7' || matrix.arch == 'aarch64') }}
+        shell: bash
+        run: |
+          find dependencies-win-${{ matrix.arch }} -iname '*astc*' -print
       - name: Build for MSVC
         if: ${{ matrix.os == 'windows-2022' }}
         working-directory: build
