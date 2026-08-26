@@ -36,6 +36,7 @@
 #include "utils/stk_process.hpp"
 
 #include <cstring>
+#include <iostream>
 
 #include "offline_kart_selection.hpp"
 #include "challenges/story_mode_timer.hpp"

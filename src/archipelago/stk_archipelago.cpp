@@ -119,10 +119,10 @@ namespace APClient
         {STK_ENTERPRISE, "stk_enterprise"},
         {XR591, "xr591"},
         {COCA_TEMPLE, "cocoa_temple"},
-        {PENGUIN_PLAYGROUND, "gp1"},
-        {OFF_THE_BEATEN_TRACK, "gp2"},
-        {TO_THE_MOON_AND_BACK, "gp3"},
-        {AT_WORLDS_END, "gp4"},
+        {PENGUIN_PLAYGROUND, "1_penguinplayground"},
+        {OFF_THE_BEATEN_TRACK, "2_offthebeatentrack"},
+        {TO_THE_MOON_AND_BACK, "3_tothemoonandback"},
+        {AT_WORLDS_END, "4_atworldsend"},
         {FORT_MAGMA, "fortmagma"}
     };
 
@@ -269,91 +269,93 @@ namespace APClient
         AP_Init(address_char.c_str(), "Super Tux Kart", slot_char.c_str(), password_char.c_str());
 
         unlocked_challenges.clear();
-#ifdef DEBUG
-        unlocked_challenges[CORNFIELD_CROSSING] = 1;
-        unlocked_challenges[SNOW_PEAK] = 1;
-        unlocked_challenges[VOLCANO_ISLAND] = 1;
-        unlocked_challenges[HACIENDA] = 1;
-        unlocked_challenges[MANSION] = 1;
-        unlocked_challenges[ABYSS] = 1;
-        unlocked_challenges[SCOTLAND] = 1;
-        unlocked_challenges[OLIVER_MATH] = 1;
-        unlocked_challenges[GRAND_PARADISO_ISLAND] = 1;
-        unlocked_challenges[CANDELA_CITY] = 1;
-        unlocked_challenges[LIGHTHOUSE] = 1;
-        unlocked_challenges[SNOW_MOUNTAIN] = 1;
-        unlocked_challenges[MINIGOLF] = 1;
-        unlocked_challenges[GREEN_VALLEY] = 1;
-        unlocked_challenges[MINES] = 1;
-        unlocked_challenges[SAND_TRACK] = 1;
-        unlocked_challenges[ZEN_GARDEN] = 1;
-        unlocked_challenges[STK_ENTERPRISE] = 1;
-        unlocked_challenges[XR591] = 1;
-        unlocked_challenges[COCA_TEMPLE] = 1;
-        unlocked_challenges[PENGUIN_PLAYGROUND] = 1;
-        unlocked_challenges[OFF_THE_BEATEN_TRACK] = 1;
-        unlocked_challenges[TO_THE_MOON_AND_BACK] = 1;
-        unlocked_challenges[AT_WORLDS_END] = 1;
-
-        completed_challenges[CORNFIELD_CROSSING] = {RaceManager::DIFFICULTY_EASY};
-        completed_challenges[SNOW_PEAK] = {RaceManager::DIFFICULTY_EASY};
-        completed_challenges[VOLCANO_ISLAND] = {RaceManager::DIFFICULTY_EASY};
-        completed_challenges[HACIENDA] = {RaceManager::DIFFICULTY_EASY};
-        completed_challenges[MANSION] = {RaceManager::DIFFICULTY_EASY};
-        completed_challenges[ABYSS] = {RaceManager::DIFFICULTY_EASY};
-        completed_challenges[SCOTLAND] = {RaceManager::DIFFICULTY_EASY};
-        completed_challenges[OLIVER_MATH] = {RaceManager::DIFFICULTY_EASY};
-        completed_challenges[GRAND_PARADISO_ISLAND] = {RaceManager::DIFFICULTY_EASY};
-        completed_challenges[CANDELA_CITY] = {RaceManager::DIFFICULTY_EASY};
-        completed_challenges[LIGHTHOUSE] = {RaceManager::DIFFICULTY_EASY};
-        completed_challenges[SNOW_MOUNTAIN] = {RaceManager::DIFFICULTY_EASY};
-        completed_challenges[MINIGOLF] = {RaceManager::DIFFICULTY_EASY};
-        completed_challenges[GREEN_VALLEY] = {RaceManager::DIFFICULTY_EASY};
-        completed_challenges[MINES] = {RaceManager::DIFFICULTY_EASY};
-        completed_challenges[SAND_TRACK] = {RaceManager::DIFFICULTY_EASY};
-        completed_challenges[ZEN_GARDEN] = {RaceManager::DIFFICULTY_EASY};
-        completed_challenges[STK_ENTERPRISE] = {RaceManager::DIFFICULTY_EASY};
-        completed_challenges[XR591] = {RaceManager::DIFFICULTY_EASY};
-        completed_challenges[COCA_TEMPLE] = {RaceManager::DIFFICULTY_EASY};
-        completed_challenges[PENGUIN_PLAYGROUND] = {RaceManager::DIFFICULTY_EASY};
-        completed_challenges[OFF_THE_BEATEN_TRACK] = {RaceManager::DIFFICULTY_EASY};
-        completed_challenges[TO_THE_MOON_AND_BACK] = {RaceManager::DIFFICULTY_EASY};
-        completed_challenges[AT_WORLDS_END] = {RaceManager::DIFFICULTY_EASY};
-
-        for (auto i = completed_challenges.begin(); i != completed_challenges.end(); i++)
-        {
-            PlayerManager::getCurrentPlayer()->getStoryModeStatus()->unlockFeature(
-                const_cast<ChallengeStatus*>(PlayerManager::getCurrentPlayer()->getChallengeStatus(
-                    track_to_id[i->first])), RaceManager::DIFFICULTY_EASY, true);
-        }
-        PlayerManager::getCurrentPlayer()->computeActive();
-#endif
+// #ifdef DEBUG
+        // unlocked_challenges[CORNFIELD_CROSSING] = 1;
+        // unlocked_challenges[SNOW_PEAK] = 1;
+        // unlocked_challenges[VOLCANO_ISLAND] = 1;
+        // unlocked_challenges[HACIENDA] = 1;
+        // unlocked_challenges[MANSION] = 1;
+        // unlocked_challenges[ABYSS] = 1;
+        // unlocked_challenges[SCOTLAND] = 1;
+        // unlocked_challenges[OLIVER_MATH] = 1;
+        // unlocked_challenges[GRAND_PARADISO_ISLAND] = 1;
+        // unlocked_challenges[CANDELA_CITY] = 1;
+        // unlocked_challenges[LIGHTHOUSE] = 1;
+        // unlocked_challenges[SNOW_MOUNTAIN] = 1;
+        // unlocked_challenges[MINIGOLF] = 1;
+        // unlocked_challenges[GREEN_VALLEY] = 1;
+        // unlocked_challenges[MINES] = 1;
+        // unlocked_challenges[SAND_TRACK] = 1;
+        // unlocked_challenges[ZEN_GARDEN] = 1;
+        // unlocked_challenges[STK_ENTERPRISE] = 1;
+        // unlocked_challenges[XR591] = 1;
+        // unlocked_challenges[COCA_TEMPLE] = 1;
+        // unlocked_challenges[PENGUIN_PLAYGROUND] = 1;
+        // unlocked_challenges[OFF_THE_BEATEN_TRACK] = 1;
+        // unlocked_challenges[TO_THE_MOON_AND_BACK] = 1;
+        // unlocked_challenges[AT_WORLDS_END] = 1;
+        //
+        // completed_challenges[CORNFIELD_CROSSING] = {RaceManager::DIFFICULTY_EASY};
+        // completed_challenges[SNOW_PEAK] = {RaceManager::DIFFICULTY_EASY};
+        // completed_challenges[VOLCANO_ISLAND] = {RaceManager::DIFFICULTY_EASY};
+        // completed_challenges[HACIENDA] = {RaceManager::DIFFICULTY_EASY};
+        // completed_challenges[MANSION] = {RaceManager::DIFFICULTY_EASY};
+        // completed_challenges[ABYSS] = {RaceManager::DIFFICULTY_EASY};
+        // completed_challenges[SCOTLAND] = {RaceManager::DIFFICULTY_EASY};
+        // completed_challenges[OLIVER_MATH] = {RaceManager::DIFFICULTY_EASY};
+        // completed_challenges[GRAND_PARADISO_ISLAND] = {RaceManager::DIFFICULTY_EASY};
+        // completed_challenges[CANDELA_CITY] = {RaceManager::DIFFICULTY_EASY};
+        // completed_challenges[LIGHTHOUSE] = {RaceManager::DIFFICULTY_EASY};
+        // completed_challenges[SNOW_MOUNTAIN] = {RaceManager::DIFFICULTY_EASY};
+        // completed_challenges[MINIGOLF] = {RaceManager::DIFFICULTY_EASY};
+        // completed_challenges[GREEN_VALLEY] = {RaceManager::DIFFICULTY_EASY};
+        // completed_challenges[MINES] = {RaceManager::DIFFICULTY_EASY};
+        // completed_challenges[SAND_TRACK] = {RaceManager::DIFFICULTY_EASY};
+        // completed_challenges[ZEN_GARDEN] = {RaceManager::DIFFICULTY_EASY};
+        // completed_challenges[STK_ENTERPRISE] = {RaceManager::DIFFICULTY_EASY};
+        // completed_challenges[XR591] = {RaceManager::DIFFICULTY_EASY};
+        // completed_challenges[COCA_TEMPLE] = {RaceManager::DIFFICULTY_EASY};
+        // completed_challenges[PENGUIN_PLAYGROUND] = {RaceManager::DIFFICULTY_EASY};
+        // completed_challenges[OFF_THE_BEATEN_TRACK] = {RaceManager::DIFFICULTY_EASY};
+        // completed_challenges[TO_THE_MOON_AND_BACK] = {RaceManager::DIFFICULTY_EASY};
+        // completed_challenges[AT_WORLDS_END] = {RaceManager::DIFFICULTY_EASY};
+        //
+        // for (auto i = completed_challenges.begin(); i != completed_challenges.end(); i++)
+        // {
+        //     PlayerManager::getCurrentPlayer()->getStoryModeStatus()->unlockFeature(
+        //         const_cast<ChallengeStatus*>(PlayerManager::getCurrentPlayer()->getChallengeStatus(
+        //             track_to_id[i->first])), RaceManager::DIFFICULTY_EASY, true);
+        // }
+        // PlayerManager::getCurrentPlayer()->computeActive();
+// #endif
 
         AP_SetItemClearCallback([]
         {
-#ifdef NDEBUG
+// #ifdef NDEBUG
             reset_unlocks();
             completed_challenges.clear();
             nitro_ability = false;
             drift_ability = false;
-#endif
+// #endif
         });
 
         AP_SetItemRecvCallback([](int item, bool notify)
         {
             if (item <= 25)
             {
-#ifdef NDEBUG
+// #ifdef NDEBUG
                 const auto track = static_cast<APTrack>(item);
-                if (unlocked_challenges[track] == 0 && std::find(PRE_UNLOCKED_TRACKS.begin(),
-                    PRE_UNLOCKED_TRACKS.end(), track) != PRE_UNLOCKED_TRACKS.end())
+                if (unlocked_challenges[track] == 0 &&
+                    std::find(PRE_UNLOCKED_TRACKS.begin(), PRE_UNLOCKED_TRACKS.end(), track)
+                        == PRE_UNLOCKED_TRACKS.end() &&
+                    RaceManager::get()->isLinearRaceMode())
                 {
                     recently_unlocked_tracks.push_back(track);
                 }
                 unlocked_challenges[track]++;
                 PlayerManager::getCurrentPlayer()->computeActive();
                 set_object_activity(track_to_id[track]);
-#endif
+// #endif
             }
             else
             {
@@ -369,7 +371,7 @@ namespace APClient
 
         AP_SetLocationCheckedCallback([](const int location)
         {
-#ifdef NDEBUG
+// #ifdef NDEBUG
             if (location >= 100) // target challenge completed locations only
             {
                 const auto track = static_cast<APTrack>(get_track_from_location_key(location));
@@ -383,7 +385,7 @@ namespace APClient
 
                 PlayerManager::getCurrentPlayer()->computeActive();
             }
-#endif
+// #endif
         });
 
         AP_RegisterSlotDataIntCallback("goal", [](const int goal)

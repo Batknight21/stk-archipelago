@@ -18,6 +18,8 @@
 
 #include "modes/overworld.hpp"
 
+#include <iostream>
+
 #include "archipelago/stk_archipelago.hpp"
 #include "audio/music_manager.hpp"
 #include "challenges/unlock_manager.hpp"

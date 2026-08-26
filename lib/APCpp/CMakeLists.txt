@@ -109,7 +109,7 @@ endif (MINGW OR NOT ZLIB_FOUND)
 set(IXWEBSOCKET_INSTALL OFF CACHE BOOL "" FORCE)
 add_subdirectory(IXWebSocket)
 include_directories(IXWebSocket)
-target_link_libraries(APCpp ixwebsocket)
+target_link_libraries(APCpp ixwebsocket stdc++fs)
 
 if (MINGW)
     target_link_libraries(APCpp -static -static-libstdc++ -static-libgcc)

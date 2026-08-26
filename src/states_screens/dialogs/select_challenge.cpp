@@ -361,22 +361,14 @@ GUIEngine::EventPropagation SelectChallengeDialog::processEvent(const std::strin
             // network_manager->initCharacterDataStructures();
             if (!APClient::difficulty_unlocked(
                 static_cast<RaceManager::Difficulty>(static_cast<int>(UserConfigParams::m_difficulty)), m_challenge_id))
-
-            switch (UserConfigParams::m_difficulty)
             {
-                case 0:
-                    c_data->setRace(RaceManager::DIFFICULTY_EASY);
-                    break;
-                case 1:
-                    c_data->setRace(RaceManager::DIFFICULTY_MEDIUM);
-                    break;
-                case 2:
-                    c_data->setRace(RaceManager::DIFFICULTY_HARD);
-                    break;
-                case 3:
-                    c_data->setRace(RaceManager::DIFFICULTY_BEST);
-                    break;
+                c_data->setRace(APClient::best_difficulty_unlocked(m_challenge_id));
             }
+            else
+            {
+                c_data->setRace(static_cast<RaceManager::Difficulty>(static_cast<int>(UserConfigParams::m_difficulty)));
+            }
+
             RaceManager::get()->setupPlayerKartInfo();
             RaceManager::get()->startNew(true);
 

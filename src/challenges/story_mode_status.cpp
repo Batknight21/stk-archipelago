@@ -205,16 +205,13 @@ void StoryModeStatus::computeActive(bool first_call)
             if (i->second->getData()->isSingleRace())
             {
                 m_locked_features[i->second->getData()->getTrackId()] = true;
-                std::cout << "locking race " << i->second->getData()->getTrackId() << "\n";
             }
             else if (i->second->getData()->isGrandPrix())
             {
                 m_locked_features[i->second->getData()->getGPId()] = true;
-                std::cout << "locking gp " << i->second->getData()->getGPId() << "\n";
             }
             else
             {
-                std::cout << "locking " << i->second->getData()->getChallengeId() << "\n";
                 // FIXME when more challenge types are implemented.
                 assert(false);
             }
