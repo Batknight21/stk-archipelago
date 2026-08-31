@@ -5,17 +5,7 @@ SuperTuxKart is a free open-source racing game featuring linux characters like t
 
 ## Set Up
 
-The setup is pretty simple:
-
-* Download the AP-World and send it to the host
-* Create an options file (usually using the options creator in the archipelago launcher)
-* Download the game client from the releases
-* Run the game and click story. This opens a new menu where you can connect to the server
-* Wait for the host to finish and enter server address, 
-  your slot name and password (if the game has one) of your Archipelago game
-
-**WARNING: If you already have a player that has the same name as your slot name, 
-the game will delete it and recreate the player, resetting all your campaign progress so choose your slot name wisely**
+For the setup see [setup up guide](/SET_UP_GUIDE.md)
 
 ## How is this game randomized
 
