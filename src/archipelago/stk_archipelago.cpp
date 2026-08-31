@@ -352,9 +352,10 @@ namespace APClient
                 {
                     recently_unlocked_tracks.push_back(track);
                 }
-                
+
                 if (unlocked_challenges[track] <= 4)
                 {
+                    std::cout << "found new track " << track << "\n";
                     unlocked_challenges[track]++;
                 }
                 PlayerManager::getCurrentPlayer()->computeActive();

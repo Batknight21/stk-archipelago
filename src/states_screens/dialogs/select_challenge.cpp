@@ -18,6 +18,8 @@
 
 #include "states_screens/dialogs/select_challenge.hpp"
 
+#include <iostream>
+
 #include "archipelago/stk_archipelago.hpp"
 #include "challenges/challenge_status.hpp"
 #include "challenges/unlock_manager.hpp"
@@ -132,7 +134,7 @@ SelectChallengeDialog::SelectChallengeDialog(const float percentWidth,
         getWidget<GUIEngine::RibbonWidget>("difficulty");
 
     if (!APClient::difficulty_unlocked(
-        static_cast<RaceManager::Difficulty>(static_cast<int>(UserConfigParams::m_difficulty)), m_challenge_id)
+        static_cast<RaceManager::Difficulty>(static_cast<int>(UserConfigParams::m_difficulty)), m_challenge_id.c_str())
         )
     {
         difficulty->setSelection(APClient::best_difficulty_unlocked(m_challenge_id), PLAYER_ID_GAME_MASTER);
@@ -203,7 +205,7 @@ SelectChallengeDialog::SelectChallengeDialog(const float percentWidth,
         getWidget<IconButtonWidget>("novice")->setBadge(ARCHIPELAGO_BADGE);
     }
 
-    if (!APClient::difficulty_unlocked(RaceManager::DIFFICULTY_MEDIUM, challenge_id))
+    if (!APClient::difficulty_unlocked(RaceManager::DIFFICULTY_MEDIUM, challenge_id.c_str()))
     {
         getWidget<IconButtonWidget>("intermediate")->setBadge(LOCKED_BADGE);
         getWidget<IconButtonWidget>("intermediate")->setActive(false);
@@ -222,7 +224,7 @@ SelectChallengeDialog::SelectChallengeDialog(const float percentWidth,
         }
     }
 
-    if (!APClient::difficulty_unlocked(RaceManager::DIFFICULTY_HARD, challenge_id))
+    if (!APClient::difficulty_unlocked(RaceManager::DIFFICULTY_HARD, challenge_id.c_str()))
     {
         getWidget<IconButtonWidget>("expert")->setBadge(LOCKED_BADGE);
         getWidget<IconButtonWidget>("expert")->setActive(false);
@@ -241,7 +243,7 @@ SelectChallengeDialog::SelectChallengeDialog(const float percentWidth,
         }
     }
 
-    if (!APClient::difficulty_unlocked(RaceManager::DIFFICULTY_BEST, challenge_id))
+    if (!APClient::difficulty_unlocked(RaceManager::DIFFICULTY_BEST, challenge_id.c_str()))
     {
         getWidget<IconButtonWidget>("supertux")->setBadge(LOCKED_BADGE);
         getWidget<IconButtonWidget>("supertux")->setActive(false);
@@ -368,9 +370,9 @@ GUIEngine::EventPropagation SelectChallengeDialog::processEvent(const std::strin
             // network_manager else call race_manager).
             // network_manager->initCharacterDataStructures();
             if (!APClient::difficulty_unlocked(
-                static_cast<RaceManager::Difficulty>(static_cast<int>(UserConfigParams::m_difficulty)), m_challenge_id))
+                static_cast<RaceManager::Difficulty>(static_cast<int>(UserConfigParams::m_difficulty)), c_data->getChallengeId()))
             {
-                c_data->setRace(APClient::best_difficulty_unlocked(m_challenge_id));
+                c_data->setRace(APClient::best_difficulty_unlocked(c_data->getChallengeId()));
             }
             else
             {
