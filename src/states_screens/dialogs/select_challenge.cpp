@@ -130,7 +130,19 @@ SelectChallengeDialog::SelectChallengeDialog(const float percentWidth,
     
     GUIEngine::RibbonWidget* difficulty =
         getWidget<GUIEngine::RibbonWidget>("difficulty");
-    
+
+    if (!APClient::difficulty_unlocked(
+        static_cast<RaceManager::Difficulty>(static_cast<int>(UserConfigParams::m_difficulty)), m_challenge_id)
+        )
+    {
+        difficulty->setSelection(APClient::best_difficulty_unlocked(m_challenge_id), PLAYER_ID_GAME_MASTER);
+        UserConfigParams::m_difficulty = static_cast<int>(APClient::best_difficulty_unlocked(m_challenge_id));
+    }
+    else
+    {
+        difficulty->setSelection(UserConfigParams::m_difficulty, PLAYER_ID_GAME_MASTER);
+    }
+
     if (UserConfigParams::m_difficulty == RaceManager::DIFFICULTY_BEST &&
         PlayerManager::getCurrentPlayer()->isLocked("difficulty_best"))
     {
@@ -144,30 +156,26 @@ SelectChallengeDialog::SelectChallengeDialog(const float percentWidth,
     const ChallengeStatus* c = PlayerManager::getCurrentPlayer()
                              ->getChallengeStatus(challenge_id);
     LabelWidget* challenge_info = getWidget<LabelWidget>("challenge_info");
+
+    challenge_info->setText(
+        getLabel(static_cast<RaceManager::Difficulty>(static_cast<int>(UserConfigParams::m_difficulty)),
+            c->getData()), false);
     
-    switch (UserConfigParams::m_difficulty)
-    {
-        case 0:
-            challenge_info->setText(getLabel(RaceManager::DIFFICULTY_EASY,   c->getData()), false );
-            break;
-        case 1:
-            challenge_info->setText(getLabel(RaceManager::DIFFICULTY_MEDIUM, c->getData()), false );
-            break;
-        case 2:
-            challenge_info->setText(getLabel(RaceManager::DIFFICULTY_HARD,   c->getData()), false );
-            break;
-        case 3:
-            if (UserConfigParams::m_difficulty == RaceManager::DIFFICULTY_BEST &&
-                PlayerManager::getCurrentPlayer()->isLocked("difficulty_best"))
-            {
-                challenge_info->setText(getLabel(RaceManager::DIFFICULTY_HARD,   c->getData()), false );
-            }
-            else
-            {
-                challenge_info->setText(getLabel(RaceManager::DIFFICULTY_BEST,   c->getData()), false );
-            }
-            break;
-    }
+    // switch (UserConfigParams::m_difficulty)
+    // {
+    //     case 0:
+    //         challenge_info->setText(getLabel(RaceManager::DIFFICULTY_EASY,   c->getData()), false );
+    //         break;
+    //     case 1:
+    //         challenge_info->setText(getLabel(RaceManager::DIFFICULTY_MEDIUM, c->getData()), false );
+    //         break;
+    //     case 2:
+    //         challenge_info->setText(getLabel(RaceManager::DIFFICULTY_HARD,   c->getData()), false );
+    //         break;
+    //     case 3:
+    //         challenge_info->setText(getLabel(RaceManager::DIFFICULTY_BEST,   c->getData()), false );
+    //         break;
+    // }
     
     updateSolvedIcon(c, RaceManager::DIFFICULTY_EASY,   "novice",       "cup_bronze.png");
     updateSolvedIcon(c, RaceManager::DIFFICULTY_MEDIUM, "intermediate", "cup_silver.png");

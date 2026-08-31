@@ -54,6 +54,7 @@
 #include <IrrlichtDevice.h>
 
 #include "Archipelago.h"
+#include "guiengine/message_queue.hpp"
 
 #ifndef SERVER_ONLY
 #include <ge_main.hpp>
@@ -362,6 +363,7 @@ GUIEngine::EventPropagation
                 {
                     story_mode_timer->pauseTimer(/*loading screen*/ false);
                     AP_Shutdown();
+                    MessageQueue::resetGlobalVariables();
                 }
 
                 if (RaceManager::get()->raceWasStartedFromOverworld())

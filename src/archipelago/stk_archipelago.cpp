@@ -352,7 +352,11 @@ namespace APClient
                 {
                     recently_unlocked_tracks.push_back(track);
                 }
-                unlocked_challenges[track]++;
+                
+                if (unlocked_challenges[track] <= 4)
+                {
+                    unlocked_challenges[track]++;
+                }
                 PlayerManager::getCurrentPlayer()->computeActive();
                 set_object_activity(track_to_id[track]);
 // #endif
@@ -531,7 +535,10 @@ namespace APClient
         case KEY:
             {
                 collected_keys++;
-                if (has_enough_keys())
+                const int completed = PlayerManager::getCurrentPlayer()->getStoryModeStatus()
+                    ->getNumCompletedChallenges();
+                const int challenges_count = static_cast<int>(Track::getCurrentTrack()->getChallengeList().size());
+                if (has_enough_keys() && (completed >= challenges_count - 1))
                 {
                     open_doors();
                 }
