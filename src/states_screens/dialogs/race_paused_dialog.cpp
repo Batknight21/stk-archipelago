@@ -1,5 +1,6 @@
 //  SuperTuxKart - a fun racing game with go-kart
 //  Copyright (C) 2010-2015 Marianne Gagnon
+//  Modified by Batknight21 2026
 //
 //  This program is free software; you can redistribute it and/or
 //  modify it under the terms of the GNU General Public License
@@ -54,6 +55,8 @@
 #include <IrrlichtDevice.h>
 
 #include "Archipelago.h"
+#include "archipelago/stk_archipelago.hpp"
+#include "config/player_manager.hpp"
 #include "guiengine/message_queue.hpp"
 
 #ifndef SERVER_ONLY
@@ -364,6 +367,8 @@ GUIEngine::EventPropagation
                     story_mode_timer->pauseTimer(/*loading screen*/ false);
                     AP_Shutdown();
                     MessageQueue::resetGlobalVariables();
+                    PlayerManager::get()->deletePlayer(PlayerManager::getCurrentPlayer());
+                    PlayerManager::get()->setCurrentPlayer(PlayerManager::get()->getPlayer(APClient::get_old_player()));
                 }
 
                 if (RaceManager::get()->raceWasStartedFromOverworld())

@@ -24,6 +24,8 @@ private:
     TextBoxWidget *m_server_address_box;
     TextBoxWidget *m_password_box;
 
+    void save(const core::stringw& server, const core::stringw& slot, const core::stringw& password);
+
 public:
 
     void init() OVERRIDE;

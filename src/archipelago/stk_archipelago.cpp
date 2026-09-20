@@ -18,12 +18,13 @@
 #include "modes/world.hpp"
 #include "scriptengine/script_engine.hpp"
 #include "tracks/track.hpp"
+#include "tracks/track_manager.hpp"
 #include "tracks/track_object_manager.hpp"
+#include "utils/string_utils.hpp"
 
 
 namespace APClient
 {
-    static std::string convert_wchar(const stringw& wtext);
     static int get_location_key(int difficulty, int trackId);
     static void grant_item(const ItemType& item);
     static void set_object_activity(const std::string& challengeId);
@@ -260,12 +261,14 @@ namespace APClient
     static int collected_keys;
     static int fort_magma_points;
     static bool keys_initialized = false;
+    static stringw old_player;
+    static RandomGenerator random;
 
     void start_ap(const stringw& address, const stringw& slot_name, const stringw& password)
     {
-        const std::string address_char = convert_wchar(address);
-        const std::string slot_char = convert_wchar(slot_name);
-        const std::string password_char = convert_wchar(password);
+        const std::string address_char = StringUtils::wideToUtf8(address);
+        const std::string slot_char = StringUtils::wideToUtf8(slot_name);
+        const std::string password_char = StringUtils::wideToUtf8(password);
         AP_Init(address_char.c_str(), "Super Tux Kart", slot_char.c_str(), password_char.c_str());
 
         unlocked_challenges.clear();
@@ -359,7 +362,11 @@ namespace APClient
                     unlocked_challenges[track]++;
                 }
                 PlayerManager::getCurrentPlayer()->computeActive();
-                set_object_activity(track_to_id[track]);
+
+                if (!(Track::getCurrentTrack()->getTrackObjectManager()->getObjects().empty()))
+                {
+                    set_object_activity(track_to_id[track]);
+                }
 // #endif
             }
             else
@@ -506,9 +513,8 @@ namespace APClient
             {
                 if (RaceManager::get()->isLinearRaceMode() && World::getWorld()->getPlayerKart(0)->getNumPowerup() <= 0)
                 {
-                    std::srand(time(nullptr));
                     World::getWorld()->getLocalPlayerKart(0)->setPowerup(
-                        static_cast<PowerupManager::PowerupType>(std::rand() % PowerupManager::POWERUP_LAST), 1);
+                        static_cast<PowerupManager::PowerupType>(random.get(PowerupManager::POWERUP_LAST)), 1);
                 }
                 else pending_power_ups++;
                 break;
@@ -611,7 +617,9 @@ namespace APClient
 
     void set_object_activity(const std::string& challengeId)
     {
-        if (challengeId == "fortmagma") return;
+        if (challengeId == "fortmagma" ||
+            !(Track::getCurrentTrack()->getTrackObjectManager()->getObjects().empty())) return;
+
         Track* track = Track::getCurrentTrack();
         if (RaceManager::get()->getTrackName() == "overworld")
         {
@@ -648,6 +656,16 @@ namespace APClient
         return recent_points;
     }
 
+    void set_old_player(const stringw& name)
+    {
+        old_player = name;
+    }
+
+    const stringw& get_old_player()
+    {
+        return old_player;
+    }
+
     void clear_unlocked()
     {
         recently_unlocked_tracks.clear();
@@ -657,9 +675,8 @@ namespace APClient
     {
         if (pending_power_ups > 0)
         {
-            std::srand(time(nullptr));
             World::getWorld()->getLocalPlayerKart(0)->setPowerup(
-                static_cast<PowerupManager::PowerupType>(std::rand() % PowerupManager::POWERUP_LAST), 1);
+                static_cast<PowerupManager::PowerupType>(random.get(PowerupManager::POWERUP_LAST)), 1);
             pending_power_ups--;
         }
         if (pending_nitro_bonus > 0)
@@ -674,9 +691,8 @@ namespace APClient
     {
         if (get_powerups() > 0 && World::getWorld()->getLocalPlayerKart(0)->getNumPowerup() == 0)
         {
-            std::srand(time(nullptr));
             World::getWorld()->getLocalPlayerKart(0)->setPowerup(
-                static_cast<PowerupManager::PowerupType>(std::rand() % PowerupManager::POWERUP_LAST), 1);
+                static_cast<PowerupManager::PowerupType>(random.get(PowerupManager::POWERUP_LAST)), 1);
             pending_power_ups--;
         }
     }
@@ -771,23 +787,6 @@ namespace APClient
             }
         }
         return tracks;
-    }
-
-    std::string convert_wchar(const stringw& wtext)
-    {
-        std::string s;
-        s.reserve(wtext.size());
-
-        for (u32 i = 0; i < wtext.size(); ++i)
-        {
-            s += static_cast<char>(wtext[i]);
-        }
-
-        if (s.empty())
-        {
-            return "";
-        }
-        return s;
     }
 
     bool is_unlocked_by_archipelago(const std::string& challengeId, const int points)

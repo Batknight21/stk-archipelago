@@ -107,6 +107,9 @@ namespace APClient
     int get_fort_magma_points();
     std::string get_key_display();
 
+    void set_old_player(const stringw& name);
+    const stringw& get_old_player();
+
     int get_speed_boosts();
     float get_nitros();
     int get_powerups();

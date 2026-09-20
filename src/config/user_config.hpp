@@ -2,6 +2,7 @@
 //  SuperTuxKart - a fun racing game with go-kart
 //  Copyright (C) 2006-2015 SuperTuxKart-Team
 //  Modelled after Supertux's configfile.h
+//  Modified by Batknight21 2026
 //
 //  This program is free software; you can redistribute it and/or
 //  modify it under the terms of the GNU General Public License
@@ -392,6 +393,18 @@ enum MultitouchControls
  */
 namespace UserConfigParams
 {
+    // ---- Archipelago
+    PARAM_PREFIX StringUserConfigParam        m_multi_server
+            PARAM_DEFAULT( StringUserConfigParam("archipelago.gg:", "multi_server",
+                "last selected multiworld server") );
+
+    PARAM_PREFIX StringUserConfigParam        m_slot_name
+            PARAM_DEFAULT( StringUserConfigParam("", "slot_name",
+                "last selected slot name") );
+
+    PARAM_PREFIX StringUserConfigParam        m_password
+            PARAM_DEFAULT( StringUserConfigParam("", "password",
+                "last selected password") );
 
     // ---- Audio
     PARAM_PREFIX GroupUserConfigParam        m_audio_group

@@ -18,6 +18,7 @@
 #include "online/profile_manager.hpp"
 #include "states_screens/cutscene_general.hpp"
 #include "states_screens/offline_kart_selection.hpp"
+#include "utils/string_utils.hpp"
 
 using namespace GUIEngine;
 
@@ -33,25 +34,36 @@ void APConnectScreen::init()
 {
     Screen::init();
     m_server_address_box = getWidget<TextBoxWidget>("address");
-    m_server_address_box->setText("archipelago.gg:");
+    m_server_address_box->setText(UserConfigParams::m_multi_server.toString());
     m_slot_name_box = getWidget<TextBoxWidget>("slot_name");
-    m_slot_name_box->setText(PlayerManager::getCurrentPlayer()->getName());
+    m_slot_name_box->setText(UserConfigParams::m_slot_name.toString());
     m_password_box = getWidget<TextBoxWidget>("password");
+    m_password_box->setText(UserConfigParams::m_password.toString());
 }
 
 void APConnectScreen::eventCallback(Widget* widget, const std::string& name, const int playerID)
 {
     if (name == "continue")
     {
+        save(m_server_address_box->getText(), m_slot_name_box->getText(), m_password_box->getText());
         NetworkConfig::get()->unsetNetworking();
+        APClient::set_old_player(PlayerManager::getCurrentPlayer()->getName());
         PlayerProfile *other_player = PlayerManager::get()->getPlayer(m_slot_name_box->getText());
-        PlayerProfile *player = PlayerManager::get()->addNewPlayer(m_slot_name_box->getText());
-        PlayerManager::get()->setCurrentPlayer(player);
+        PlayerProfile *player;
+
         if (other_player != nullptr)
         {
-            player->setFirstTime(other_player->isFirstTime());
-            PlayerManager::get()->deletePlayer(other_player);
+            stringw ap_prefix = "AP";
+            PlayerProfile *old_ap_player = PlayerManager::get()->getPlayer(ap_prefix + m_slot_name_box->getText());
+            if (old_ap_player != nullptr)
+            {
+                PlayerManager::get()->deletePlayer(old_ap_player);
+            }
+            player = PlayerManager::get()->addNewPlayer(ap_prefix + m_slot_name_box->getText());
         }
+        else player = PlayerManager::get()->addNewPlayer(m_slot_name_box->getText());
+
+        PlayerManager::get()->setCurrentPlayer(player);
         PlayerManager::get()->save();
 
         // Start the story mode (and speedrun) timer
@@ -76,7 +88,6 @@ void APConnectScreen::eventCallback(Widget* widget, const std::string& name, con
 
             CutSceneGeneral* scene = CutSceneGeneral::getInstance();
             scene->push();
-            return;
         }
         else
         {
@@ -97,6 +108,14 @@ void APConnectScreen::eventCallback(Widget* widget, const std::string& name, con
     }
     else if (name == "back")
     {
+        save(m_server_address_box->getText(), m_slot_name_box->getText(), m_password_box->getText());
         StateManager::get()->escapePressed();
     }
+}
+
+void APConnectScreen::save(const stringw &server, const stringw &slot, const stringw &password)
+{
+    UserConfigParams::m_multi_server = StringUtils::wideToUtf8(server);
+    UserConfigParams::m_slot_name = StringUtils::wideToUtf8(slot);
+    UserConfigParams::m_password = StringUtils::wideToUtf8(password);
 }
