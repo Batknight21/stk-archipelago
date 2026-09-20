@@ -17,6 +17,3 @@ same steps as usual:
   A new menu should open
 - wait for the host to create the game and send you server address and password 
 - enter the server details (server address, slot name and password) and press connect
-
-**WARNING: If you already have a player that has the same name as your slot name, 
-the game will delete it and recreate the player, resetting all your campaign progress so choose your slot name wisely**
